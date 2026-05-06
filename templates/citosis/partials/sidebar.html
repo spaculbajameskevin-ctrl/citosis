@@ -1,0 +1,46 @@
+{% load static %}
+<aside id="sidebar" class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">
+      <img src="{% static 'img/MC Seal.png' %}" alt="CITOSIS PRO logo" />
+    </div>
+    <div>
+      <h2>CITOSIS PRO</h2>
+      <small>Tourism Management Suite</small>
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <button class="nav-btn active" data-page="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></button>
+    <button class="nav-btn" data-page="incoming-data"><i class="fa-solid fa-inbox"></i><span>Incoming Data</span><span class="nav-badge" id="badgeIncomingData">0</span></button>
+    <button class="nav-btn" data-page="request-data"><i class="fa-solid fa-bell"></i><span>Request Data</span></button>
+    <button class="nav-btn" data-page="request-history"><i class="fa-solid fa-clock-rotate-left"></i><span>Request History</span><span class="nav-badge" id="badgeRequestHistory">0</span></button>
+    <button class="nav-btn" data-page="template"><i class="fa-solid fa-file-excel"></i><span>Template</span></button>
+    <button class="nav-btn" data-page="send-data"><i class="fa-solid fa-paper-plane"></i><span>Send Data</span></button>
+    <button class="nav-btn" data-page="sent-data"><i class="fa-solid fa-list-check"></i><span>Sent Data</span><span class="nav-badge" id="badgeSentData">0</span></button>
+    <button class="nav-btn" data-page="records"><i class="fa-solid fa-building-circle-check"></i><span>Data Received</span><span class="nav-badge" id="badgeRecords">0</span></button>
+    <button class="nav-btn" data-page="visitors"><i class="fa-solid fa-users"></i><span>Visitors</span><span class="nav-badge" id="badgeVisitors">0</span></button>
+    <button class="nav-btn" data-page="users"><i class="fa-solid fa-user-gear"></i><span>Users</span><span class="nav-badge" id="badgeUsers">0</span></button>
+    <button class="nav-btn" data-page="recycle"><i class="fa-solid fa-trash-can-arrow-up"></i><span>Recycle Bin</span><span class="nav-badge" id="badgeRecycle">0</span></button>
+    <button class="nav-btn" data-page="logs"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity Logs</span></button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-account" id="sidebarAccount" role="button" tabindex="0" title="Edit profile">
+      <div class="sidebar-account-main">
+        <span class="sidebar-account-avatar" id="sidebarAccountAvatar">?</span>
+        <span class="sidebar-account-copy">
+          <span>Signed in as</span>
+          <strong id="sidebarAccountName">Signed out</strong>
+          <small id="sidebarAccountEmail">No account loaded</small>
+        </span>
+      </div>
+      <div class="sidebar-account-tags">
+        <span class="sidebar-account-pill" id="sidebarAccountRole">No role</span>
+        <span class="sidebar-account-pill is-muted" id="sidebarAccountMeta">No ID</span>
+      </div>
+    </div>
+    <p class="sidebar-note">Search, edit, recover, export, and monitor tourism office information from one responsive interface.</p>
+    <button class="btn btn-danger" id="logoutSidebarBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
+  </div>
+</aside>

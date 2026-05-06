@@ -1,0 +1,46 @@
+<section id="request-history" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Request History</h2>
+      <p>Review data requests sent to users, including recipients, due dates, delivery time, and read status.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" id="refreshDataRequestHistoryBtn" type="button"><i class="fa-solid fa-rotate-right"></i>Refresh</button>
+      <button class="btn btn-primary" id="requestDataFromHistoryBtn" type="button"><i class="fa-solid fa-bell"></i>Request Data</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="dataRequestHistorySearch" type="text" placeholder="Search title, recipient, establishment, or message" />
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-filter"></i>
+      <select id="dataRequestHistoryStatusFilter">
+        <option value="">All statuses</option>
+        <option value="Unread">Unread</option>
+        <option value="Read">Read</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="clearDataRequestHistoryFilters"><i class="fa-solid fa-eraser"></i>Reset Filters</button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Request</th>
+            <th>Recipient</th>
+            <th>Establishment</th>
+            <th>Due Date</th>
+            <th>Sent</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="dataRequestHistoryTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>

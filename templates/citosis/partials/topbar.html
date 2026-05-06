@@ -1,0 +1,42 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <button id="menuBtn" class="icon-btn mobile-only" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-title">
+      <h1 id="pageTitle">Dashboard</h1>
+      <p id="clockText">Loading date and time...</p>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="globalSearch" type="text" placeholder="Search current page" />
+    </div>
+    <div class="notification-menu">
+      <button class="icon-btn" id="notificationBtn" title="Notifications" aria-label="Notifications" aria-expanded="false">
+        <i class="fa-regular fa-bell"></i>
+        <span id="notificationBadge" class="notification-badge hidden">0</span>
+      </button>
+      <div id="notificationPanel" class="notification-panel hidden">
+        <div class="notification-panel-head">
+          <div>
+            <strong>Notifications</strong>
+            <p>Submission review updates and action items appear here.</p>
+          </div>
+          <button class="btn btn-ghost" id="markAllNotificationsReadBtn" type="button">Mark all read</button>
+        </div>
+        <div id="notificationList" class="notification-list"></div>
+      </div>
+    </div>
+    <button class="icon-btn" id="themeBtn" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+    <input id="importInput" class="file-input-hidden" type="file" accept="application/json" />
+    <div class="account-chip" id="accountChip" title="Edit profile" role="button" tabindex="0">
+      <span class="account-avatar" id="accountAvatar">?</span>
+      <span class="account-copy">
+        <strong id="accountName">Signed out</strong>
+        <small id="accountIdentifier">No account</small>
+      </span>
+    </div>
+    <button class="btn btn-danger" id="logoutTopBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
+  </div>
+</header>

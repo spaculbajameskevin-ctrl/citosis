@@ -1,0 +1,71 @@
+<section id="sent-data" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Sent Data</h2>
+      <p>Review the files you saved or sent to the admin, including status, feedback, versions, and downloads.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-primary" data-page-jump="send-data"><i class="fa-solid fa-file-arrow-up"></i>Send New Data</button>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Data History</h3>
+        <p>Track your drafts, review progress, and approval performance. The numbers update as you filter.</p>
+      </div>
+      <span id="sendDataCount" class="mini-pill"><i class="fa-solid fa-inbox"></i>0 submissions</span>
+    </div>
+    <div class="send-data-history-grid">
+      <article class="info-card send-data-history-card">
+        <strong>Total submissions</strong>
+        <div id="sendDataHistoryTotal" class="stat-value">0</div>
+        <p>Files currently included in your filtered history.</p>
+      </article>
+      <article class="info-card send-data-history-card">
+        <strong>Approval rate</strong>
+        <div id="sendDataHistoryApprovalRate" class="stat-value">0%</div>
+        <p>Based on approved vs rejected submissions in the current view.</p>
+      </article>
+      <article class="info-card send-data-history-card">
+        <strong>Open reviews</strong>
+        <div id="sendDataHistoryOpen" class="stat-value">0</div>
+        <p>Pending, in-review, and revision-requested items still in progress.</p>
+      </article>
+      <article class="info-card send-data-history-card">
+        <strong>Drafts</strong>
+        <div id="sendDataHistoryDrafts" class="stat-value">0</div>
+        <p>Saved drafts that have not been sent to the admin yet.</p>
+      </article>
+    </div>
+    <div class="send-data-history-toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="sendDataHistorySearch" type="text" placeholder="Search filename, sheet, status, note, or feedback" />
+      </div>
+      <div class="filter-box">
+        <i class="fa-solid fa-filter"></i>
+        <select id="sendDataHistoryStatusFilter">
+          <option value="">All statuses</option>
+          <option value="Draft">Draft</option>
+          <option value="Pending">Pending</option>
+          <option value="In Review">In Review</option>
+          <option value="Needs Revision">Needs Revision</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="field compact-field">
+        <label for="sendDataHistoryDateFrom">From</label>
+        <input id="sendDataHistoryDateFrom" class="form-control" type="date" />
+      </div>
+      <div class="field compact-field">
+        <label for="sendDataHistoryDateTo">To</label>
+        <input id="sendDataHistoryDateTo" class="form-control" type="date" />
+      </div>
+      <button class="btn btn-ghost" id="sendDataHistoryClearBtn"><i class="fa-solid fa-eraser"></i>Clear Filters</button>
+    </div>
+    <div id="sendDataList" class="list-stack"></div>
+  </section>
+</section>

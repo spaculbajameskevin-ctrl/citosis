@@ -1,0 +1,75 @@
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .intelligence-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .intelligence-grid { grid-template-columns: 1fr; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .incoming-data-item { grid-template-columns: auto minmax(0, 1fr); }
+  .incoming-data-actions { grid-column: 2; }
+  .incoming-data-filters { grid-template-columns: 1fr; }
+  .incoming-data-filters-advanced { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .incoming-data-saved-toolbar { grid-template-columns: 1fr; }
+  .incoming-data-bulk-toolbar { grid-template-columns: 1fr 1fr; }
+  .excel-submission-grid { grid-template-columns: 1fr; }
+  .send-data-info-grid { grid-template-columns: 1fr; }
+  .send-data-history-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .send-data-history-toolbar { grid-template-columns: 1fr 1fr; }
+  .data-received-toolbar { grid-template-columns: 1fr 1fr; }
+  .data-received-item { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1080px) {
+  .login-card { grid-template-columns: 1fr; }
+  .login-hero { min-height: 320px; }
+  .toolbar { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 980px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .mobile-only { display: inline-grid; }
+}
+
+@media (min-width: 981px) { .mobile-only, .overlay { display: none !important; } }
+
+@media (max-width: 720px) {
+  .auth-shell, .main, .topbar, .panel, .stat-card, .metric-card, .login-hero, .login-panel { padding-left: 18px; padding-right: 18px; }
+  .dashboard-hero { align-items: stretch; }
+  .dashboard-hero-actions { width: 100%; align-items: stretch; }
+  .dashboard-hero-actions .btn { width: 100%; justify-content: center; }
+  .dashboard-section-title { align-items: flex-start; }
+  .topbar { align-items: flex-start; }
+  .topbar-actions, .page-actions { width: 100%; justify-content: stretch; }
+  .search-box, .search-box input, .page-actions .btn, .topbar-actions .btn, .topbar-actions .search-box { width: 100%; }
+  .account-chip { width: 100%; max-width: none; }
+  .stats-grid, .intelligence-metrics, .cards-2, .hero-grid, .modal-grid { grid-template-columns: 1fr; }
+  .modal-grid .span-2 { grid-column: span 1; }
+  .list-item, .modal-foot, .confirm-actions, .helper-row { flex-direction: column; align-items: stretch; }
+  .send-data-sheet-card, .send-data-sheet-main, .send-data-sheet-actions { flex-direction: column; align-items: stretch; }
+  .send-data-history-grid, .send-data-history-toolbar { grid-template-columns: 1fr; }
+  .data-received-toolbar { grid-template-columns: 1fr; }
+  .data-received-group-head { flex-direction: column; }
+  .data-received-group-meta { justify-items: stretch; }
+  .template-download-actions { flex-direction: column; align-items: stretch; }
+  .send-data-dropzone { text-align: center; }
+  .excel-preview-loading { flex-direction: column; }
+  .excel-submission-workspace, .excel-submission-panel { padding: 16px; }
+  .incoming-data-item { grid-template-columns: 1fr; }
+  .incoming-data-actions { grid-column: auto; }
+  .submission-primary-actions { grid-template-columns: 1fr; }
+  .incoming-data-filters-advanced { grid-template-columns: 1fr; }
+  .incoming-data-bulk-toolbar { grid-template-columns: 1fr; }
+  .incoming-data-saved-actions { width: 100%; }
+  .saved-filter-chip-wrap { display: flex; width: 100%; }
+  .saved-filter-chip { flex: 1; width: auto; justify-content: flex-start; }
+  .excel-row-actions-head, .excel-row-actions-cell { width: auto; min-width: 110px; }
+  .send-data-upload-progress-meta, .send-data-queue-progress-meta { align-items: flex-start; }
+  .submission-last-action { flex-direction: column; align-items: flex-start; }
+  .submission-history-item { grid-template-columns: 1fr; }
+  .submission-history-head, .submission-diff-values { grid-template-columns: 1fr; display: grid; }
+  .submission-decision-actions { grid-template-columns: 1fr; }
+  .send-data-empty-state { min-height: 220px; }
+  .trend-card-top, .trend-card-footer, .trend-card-axis, .destination-trend-summary, .destination-trend-head, .destination-trend-meta { flex-direction: column; align-items: flex-start; }
+  .trend-card-chart { min-height: 150px; }
+  .action-btn, .btn { width: 100%; }
+}

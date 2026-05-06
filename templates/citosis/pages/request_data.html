@@ -1,0 +1,37 @@
+<section id="request-data" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Request Data</h2>
+      <p>Notify establishments that admin needs a data file for review.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" id="refreshDataRequestTargetsBtn" type="button"><i class="fa-solid fa-rotate-right"></i>Refresh Recipients</button>
+    </div>
+  </div>
+
+  <form id="dataRequestPageForm" class="panel">
+    <div class="modal-grid">
+      <div class="field span-2">
+        <label for="pageDataRequestEstablishments">Recipients</label>
+        <select class="form-control recipient-select" id="pageDataRequestEstablishments" name="establishments" multiple size="8"></select>
+        <p class="form-hint">Choose one or more establishments. Every active user under the selected establishment receives the request.</p>
+      </div>
+      <div class="field span-2">
+        <label for="pageDataRequestTitle">Request title</label>
+        <input class="form-control" id="pageDataRequestTitle" name="title" type="text" value="Data request from admin" maxlength="120" required>
+      </div>
+      <div class="field">
+        <label for="pageDataRequestDueDate">Due date</label>
+        <input class="form-control" id="pageDataRequestDueDate" name="due_date" type="date">
+      </div>
+      <div class="field span-2">
+        <label for="pageDataRequestMessage">Data needed</label>
+        <textarea class="form-control" id="pageDataRequestMessage" name="message" maxlength="1000" placeholder="Example: Please submit the April visitor arrivals file for review." required></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <p id="dataRequestPageStatus" class="submission-subtitle"></p>
+      <button class="btn btn-primary" id="sendDataRequestPageBtn" type="submit"><i class="fa-solid fa-paper-plane"></i>Send Request</button>
+    </div>
+  </form>
+</section>

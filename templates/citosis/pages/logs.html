@@ -1,0 +1,33 @@
+<section id="logs" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Activity Logs</h2>
+      <p>Review actions performed in the system and export or clear your activity history.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" id="exportLogsBtn"><i class="fa-solid fa-file-export"></i>Export Logs</button>
+      <button class="btn btn-danger" id="clearLogsBtn"><i class="fa-solid fa-broom"></i>Clear Logs</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="logSearch" type="text" placeholder="Search action or details" />
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-filter"></i>
+      <select id="logLimitFilter">
+        <option value="10">Show latest 10</option>
+        <option value="25" selected>Show latest 25</option>
+        <option value="50">Show latest 50</option>
+        <option value="100">Show latest 100</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="clearLogSearch"><i class="fa-solid fa-eraser"></i>Reset Filters</button>
+  </div>
+
+  <div class="panel">
+    <div id="logsList" class="list-stack"></div>
+  </div>
+</section>

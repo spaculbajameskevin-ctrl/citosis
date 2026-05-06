@@ -1,0 +1,44 @@
+<section id="recycle" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Recycle Bin</h2>
+      <p>Restore deleted records, visitors, and users or remove them permanently.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-danger" id="emptyRecycleBtn"><i class="fa-solid fa-trash"></i>Empty Recycle Bin</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="recycleSearch" type="text" placeholder="Search deleted items" />
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-filter"></i>
+      <select id="recycleTypeFilter">
+        <option value="">All item types</option>
+        <option value="record">Record</option>
+        <option value="visitor">Visitor</option>
+        <option value="user">User</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="clearRecycleFilters"><i class="fa-solid fa-eraser"></i>Reset Filters</button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Item</th>
+            <th>Deleted On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="recycleTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>

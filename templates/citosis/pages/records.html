@@ -1,0 +1,53 @@
+<section id="records" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Data Received</h2>
+      <p>Review received user submissions grouped by establishment, with status, file details, preview, and download actions.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" data-page-jump="incoming-data"><i class="fa-solid fa-inbox"></i>Open Review Queue</button>
+    </div>
+  </div>
+
+  <div class="toolbar data-received-toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="receivedDataSearch" type="text" placeholder="Search establishment, sender, file, sheet, or feedback" />
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-building"></i>
+      <select id="receivedDataEstablishmentFilter">
+        <option value="">All establishments</option>
+      </select>
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-filter"></i>
+      <select id="receivedDataStatusFilter">
+        <option value="">All statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="In Review">In Review</option>
+        <option value="Needs Revision">Needs Revision</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="clearReceivedDataFilters"><i class="fa-solid fa-eraser"></i>Reset Filters</button>
+  </div>
+
+  <section class="panel data-received-summary">
+    <div class="panel-head">
+      <div>
+        <h3>Received by Establishment</h3>
+        <p>Each group shows the latest files received from that office or establishment.</p>
+      </div>
+      <span id="receivedDataCount" class="mini-pill"><i class="fa-solid fa-inbox"></i>0 received</span>
+    </div>
+    <div id="receivedDataList" class="data-received-list"></div>
+  </section>
+
+  <button class="btn btn-primary hidden" id="addRecordBtn" type="button"><i class="fa-solid fa-plus"></i>Add Record</button>
+  <input id="recordSearch" class="hidden" type="text" />
+  <select id="recordCategoryFilter" class="hidden"><option value="">All categories</option></select>
+  <button class="hidden" id="clearRecordFilters" type="button"></button>
+  <table class="hidden"><tbody id="recordTable"></tbody></table>
+</section>

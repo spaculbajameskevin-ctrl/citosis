@@ -1,0 +1,10 @@
+Django
+djangorestframework
+django-cors-headers
+gunicorn
+pillow
+PyMySQL
+python-dotenv
+openpyxl
+whitenoise
+xlrd

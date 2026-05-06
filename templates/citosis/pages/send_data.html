@@ -1,0 +1,172 @@
+<section id="send-data" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Send Data</h2>
+      <p>Preview CSV files or Excel workbooks, choose the table data you want to send, and submit it directly to the admin for review.</p>
+    </div>
+    <div class="page-actions">
+      <input id="sendDataFileInput" type="file" accept=".csv,.xls,.xlsx,text/csv,application/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" multiple />
+      <button class="btn btn-primary" id="sendDataSelectBtn"><i class="fa-solid fa-file-arrow-up"></i>Select CSV/Excel File(s)</button>
+      <button class="btn btn-ghost" id="sendDataSaveDraftBtn"><i class="fa-solid fa-floppy-disk"></i>Save Draft(s)</button>
+      <button class="btn btn-secondary" id="sendDataSubmitBtn"><i class="fa-solid fa-paper-plane"></i>Send Ready File(s)</button>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Submission Queue</h3>
+        <p>Only `.csv`, `.xls`, and `.xlsx` files are accepted. Review the preview first so you can catch mistakes before the admin sees it.</p>
+      </div>
+      <span id="sendDataSelectedFile" class="mini-pill"><i class="fa-solid fa-file-excel"></i>No files queued</span>
+    </div>
+
+    <div id="sendDataError" class="excel-preview-error hidden" aria-live="polite"></div>
+    <div id="sendDataSuccess" class="success-banner hidden" aria-live="polite"></div>
+    <div id="sendDataLoading" class="excel-preview-loading hidden" aria-live="polite">
+      <div class="excel-spinner"></div>
+      <div class="excel-preview-loading-body">
+        <div>
+          <strong id="sendDataLoadingTitle">Preparing Excel preview...</strong>
+          <p id="sendDataLoadingText">Please wait while the file is read and checked before submission.</p>
+        </div>
+        <div class="send-data-upload-progress">
+          <div class="send-data-upload-progress-track" aria-hidden="true">
+            <span id="sendDataLoadingProgressBar" class="send-data-upload-progress-fill"></span>
+          </div>
+          <div class="send-data-upload-progress-meta">
+            <strong id="sendDataLoadingProgressLabel">Starting upload...</strong>
+            <span id="sendDataLoadingProgressValue">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="send-data-info-grid">
+      <article
+        id="sendDataDropzone"
+        class="info-card send-data-card send-data-dropzone"
+        tabindex="0"
+        role="button"
+        aria-label="Drag and drop CSV or Excel files here or press Enter to browse"
+      >
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <strong>Drag & Drop Upload</strong>
+        <p>Drop one or more `.csv`, `.xls`, or `.xlsx` files here, or click this box to browse and add them in bulk.</p>
+      </article>
+      <article class="info-card send-data-card">
+        <strong>Preview before sending</strong>
+        <p>The system now lets you inspect the sheet data first so you can verify the content before it reaches the admin dashboard.</p>
+      </article>
+      <article class="info-card send-data-card">
+        <strong>Validation feedback</strong>
+        <p>Missing columns, invalid formats, and duplicate rows are highlighted so you can catch common upload problems early.</p>
+      </article>
+      <article class="info-card send-data-card">
+        <strong>Template downloads</strong>
+        <p>Start with a preformatted workbook when you want fewer errors and a faster admin review cycle.</p>
+        <div class="template-download-actions">
+          <button class="btn btn-ghost" id="downloadVisitorTemplateBtn"><i class="fa-solid fa-file-arrow-down"></i>Visitor Template</button>
+          <button class="btn btn-ghost" id="downloadRecordTemplateBtn"><i class="fa-solid fa-file-arrow-down"></i>Tourism Template</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="panel-head send-data-queue-head">
+      <div>
+        <h4>Upload Queue</h4>
+        <p>Batch files appear here. Open any queued file to review its tables, notes, mapping, and validation before sending.</p>
+      </div>
+      <span id="sendDataQueueCount" class="mini-pill"><i class="fa-solid fa-layer-group"></i>0 queued</span>
+    </div>
+    <div id="sendDataFileQueue" class="send-data-file-queue"></div>
+  </section>
+
+  <section id="sendDataPreviewPanel" class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Preview Active File</h3>
+        <p>Open a queued file, choose the CSV table or Excel sheet to send, inspect the preview, and review the validation notes first.</p>
+      </div>
+      <span id="sendDataSheetCount" class="mini-pill"><i class="fa-solid fa-layer-group"></i>0 selected</span>
+    </div>
+
+    <div id="sendDataPreviewSummary" class="excel-preview-summary">
+      <div class="mini-pill"><i class="fa-solid fa-eye"></i>User preview</div>
+      <p id="sendDataPreviewMeta">Select a CSV or Excel file to load its table preview and validate it before sending.</p>
+    </div>
+
+    <div id="sendDataPreviewEmpty" class="excel-empty-state"></div>
+
+    <div id="sendDataPreviewContent" class="excel-preview-content hidden">
+      <div class="send-data-sheet-toolbar">
+        <div>
+          <strong>Sheets to Send</strong>
+          <p>Each selected CSV table or Excel sheet will be delivered as its own admin review item so the queue stays organized.</p>
+        </div>
+      </div>
+      <div id="sendDataSheetList" class="send-data-sheet-list"></div>
+
+      <div class="send-data-mapping-panel">
+        <div class="panel-head send-data-mapping-head">
+          <div>
+            <h4>Auto Data Mapping</h4>
+            <p id="sendDataMappingHelp">If the file uses different column names, map them to the required fields here.</p>
+          </div>
+          <div class="filter-box send-data-template-box">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <select id="sendDataTemplateSelect">
+              <option value="">Auto detect template</option>
+            </select>
+          </div>
+        </div>
+        <div id="sendDataMappingFields" class="send-data-mapping-grid"></div>
+      </div>
+
+      <div class="send-data-notes-panel">
+        <div class="panel-head send-data-notes-head">
+          <div>
+            <h4>Submission Notes</h4>
+            <p>Add a short message for the admin before you save a draft or send the selected sheets.</p>
+          </div>
+          <span id="sendDataVersionMeta" class="mini-pill"><i class="fa-solid fa-code-branch"></i>Next version: v1</span>
+        </div>
+        <div class="field">
+          <label for="sendDataNotes">Add message to admin</label>
+          <textarea id="sendDataNotes" class="form-control" placeholder="Example: Data is incomplete for April. Please prioritize this." maxlength="1000"></textarea>
+        </div>
+      </div>
+
+      <div class="send-data-validation-head">
+        <div>
+          <h4>Validation Feedback</h4>
+          <p id="sendDataValidationProfile">Basic file checks will appear here once a table is previewed.</p>
+        </div>
+        <span id="sendDataValidationIssueCount" class="mini-pill"><i class="fa-solid fa-triangle-exclamation"></i>0 issues</span>
+      </div>
+      <div id="sendDataValidationList" class="list-stack"></div>
+
+      <div class="excel-preview-toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="sendDataPreviewSearch" type="text" placeholder="Search across the previewed rows" />
+        </div>
+        <div class="excel-preview-stats">
+          <span id="sendDataPreviewRowsCount" class="mini-pill"><i class="fa-solid fa-table-list"></i>0 rows</span>
+          <span id="sendDataPreviewColumnsCount" class="mini-pill"><i class="fa-solid fa-table-columns"></i>0 columns</span>
+        </div>
+      </div>
+
+      <div id="sendDataPreviewTableWrap" class="table-wrap excel-preview-table-wrap"></div>
+
+      <div class="excel-preview-footer">
+        <p id="sendDataPreviewHint" class="excel-preview-hint">Preview the selected sheet here before sending it to the admin.</p>
+        <div class="excel-pagination">
+          <button class="btn btn-ghost" id="sendDataPrevPageBtn"><i class="fa-solid fa-chevron-left"></i>Previous</button>
+          <span id="sendDataPreviewPageInfo" class="mini-pill"><i class="fa-solid fa-book-open"></i>Page 1 of 1</span>
+          <button class="btn btn-ghost" id="sendDataNextPageBtn">Next<i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>

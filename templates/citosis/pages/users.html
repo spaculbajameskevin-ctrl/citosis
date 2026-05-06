@@ -1,0 +1,57 @@
+<section id="users" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Users</h2>
+      <p>Manage staff members, assign roles, and monitor approval, verification, and access status.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-primary" id="addUserBtn"><i class="fa-solid fa-user-plus"></i>Add User</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="userSearch" type="text" placeholder="Search name, establishment, email, or role" />
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-filter"></i>
+      <select id="userRoleFilter">
+        <option value="">All roles</option>
+        <option>Super Admin</option>
+        <option>Reviewer</option>
+        <option>Viewer</option>
+        <option>User</option>
+      </select>
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-signal"></i>
+      <select id="userStatusFilter">
+        <option value="">All statuses</option>
+        <option>Pending Approval</option>
+        <option>Active</option>
+        <option>Inactive</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="clearUserFilters"><i class="fa-solid fa-eraser"></i>Reset Filters</button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Establishment</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last Seen</th>
+            <th>Updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>

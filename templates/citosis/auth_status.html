@@ -1,0 +1,37 @@
+{% extends "citosis/base.html" %}
+{% load static %}
+{% block title %}Account Status - CITOSIS PRO{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="login-card">
+    <section class="login-hero">
+      <div>
+        <div class="hero-badge">
+          <i class="fa-solid fa-envelope-open-text"></i>
+          Account Security
+        </div>
+        <h1>CITOSIS</h1>
+        <p>Verify your access and keep your tourism account secure before going online.</p>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-form-wrap">
+        <h2>{{ title }}</h2>
+        <p class="subtext">{{ message }}</p>
+        <p class="{% if is_success %}success-text{% else %}error-text{% endif %}">
+          {% if is_success %}
+            You can return to the sign-in page when you are ready.
+          {% else %}
+            Use the sign-in page to request a fresh email if needed.
+          {% endif %}
+        </p>
+        <a class="btn btn-primary btn-block" href="/">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Return to Sign In
+        </a>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

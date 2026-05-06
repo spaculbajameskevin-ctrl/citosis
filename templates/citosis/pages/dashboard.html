@@ -1,0 +1,173 @@
+<section id="dashboard" class="page active">
+  <div class="dashboard-hero">
+    <div>
+      <span class="dashboard-eyebrow">Admin Dashboard</span>
+      <h2>System overview</h2>
+      <p>Monitor submissions, visitors, users, destinations, and recent activity from one clean workspace.</p>
+    </div>
+    <div class="dashboard-hero-actions">
+      <button class="btn btn-primary" data-page-jump="incoming-data"><i class="fa-solid fa-inbox"></i>Review Incoming Data</button>
+      <button class="btn btn-ghost" data-page-jump="request-data"><i class="fa-solid fa-bell"></i>Request Data</button>
+    </div>
+  </div>
+
+  <div class="dashboard-section-title">
+    <div>
+      <h3>Overview</h3>
+      <p>Current totals across the tourism system.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-top">
+        <div>
+          <h3>Total Records</h3>
+          <div class="stat-value" id="statRecords">0</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+      </div>
+      <p class="stat-meta" id="statRecordsMeta">No destinations saved yet.</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <div>
+          <h3>Total Visitors</h3>
+          <div class="stat-value" id="statVisitors">0</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+      </div>
+      <p class="stat-meta" id="statVisitorsMeta">No visitor records yet.</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <div>
+          <h3>Active Users</h3>
+          <div class="stat-value" id="statUsers">0</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-user-check"></i></div>
+      </div>
+      <p class="stat-meta" id="statUsersMeta">No active staff accounts.</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <div>
+          <h3>Recycle Bin</h3>
+          <div class="stat-value" id="statRecycle">0</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-trash-can-arrow-up"></i></div>
+      </div>
+      <p class="stat-meta" id="statRecycleMeta">Deleted items are recoverable here.</p>
+    </article>
+  </div>
+
+  <section id="adminIntelligenceSection" class="admin-intelligence hidden">
+    <div class="dashboard-section-title">
+      <div>
+        <h3>Review Health</h3>
+        <p>Submission workload and admin review speed.</p>
+      </div>
+    </div>
+    <div id="adminMetricsGrid" class="intelligence-metrics"></div>
+
+    <div class="dashboard-section-title">
+      <div>
+        <h3>Trends</h3>
+        <p>Recent movement in submissions, visitors, and destinations.</p>
+      </div>
+    </div>
+    <div class="intelligence-grid">
+      <section class="panel intelligence-panel">
+        <div class="panel-head">
+          <div>
+            <h3>Submissions Over Time</h3>
+            <p>New CSV and Excel files reaching the admin queue across the last seven days.</p>
+          </div>
+          <span class="mini-pill"><i class="fa-solid fa-file-arrow-up"></i>Review flow</span>
+        </div>
+        <div id="submissionsTrendChart" class="chart-shell"></div>
+      </section>
+
+      <section class="panel intelligence-panel">
+        <div class="panel-head">
+          <div>
+            <h3>Visitors Growth</h3>
+            <p>How the tracked visitor volume has grown in the last seven days.</p>
+          </div>
+          <span class="mini-pill"><i class="fa-solid fa-users"></i>Growth view</span>
+        </div>
+        <div id="visitorsGrowthChart" class="chart-shell"></div>
+      </section>
+
+      <section class="panel intelligence-panel">
+        <div class="panel-head">
+          <div>
+            <h3>Popular Destinations Trends</h3>
+            <p>Recent visitor momentum for the destinations that matter most right now.</p>
+          </div>
+          <span class="mini-pill"><i class="fa-solid fa-chart-line"></i>Momentum</span>
+        </div>
+        <div id="destinationsTrendChart" class="chart-shell"></div>
+      </section>
+    </div>
+  </section>
+
+  <div class="dashboard-section-title">
+    <div>
+      <h3>Activity</h3>
+      <p>What needs attention and what changed recently.</p>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>Destination Popularity</h3>
+          <p>Most visited places from the recorded visitor entries.</p>
+        </div>
+        <div class="quick-actions">
+          <button class="btn btn-primary" data-quick-add="record"><i class="fa-solid fa-plus"></i>Add Record</button>
+          <button class="btn btn-secondary" data-quick-add="visitor"><i class="fa-solid fa-user-plus"></i>Add Visitor</button>
+        </div>
+      </div>
+      <div id="destinationBars" class="destination-bars"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>Recent Activity</h3>
+          <p>Latest updates from records, visitors, users, and recovery actions.</p>
+        </div>
+        <span class="mini-pill"><i class="fa-solid fa-bolt"></i>Live updates</span>
+      </div>
+      <div id="activityFeed" class="list-stack"></div>
+    </section>
+  </div>
+
+  <div class="cards-2">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>Newest Destinations</h3>
+          <p>Latest tourism records added or changed.</p>
+        </div>
+      </div>
+      <div id="recentRecords" class="mini-list"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>Today&apos;s Status</h3>
+          <p>Simple status counts for daily monitoring.</p>
+        </div>
+      </div>
+      <div id="summaryList" class="list-stack"></div>
+    </section>
+  </div>
+</section>

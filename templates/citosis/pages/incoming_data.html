@@ -1,0 +1,230 @@
+<section id="incoming-data" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Incoming Data</h2>
+      <p>Review submitted CSV and Excel files, inspect table previews, and manage approval workflows in one clean workspace.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-primary" id="requestDataBtn" type="button"><i class="fa-solid fa-bell"></i>Request Data</button>
+    </div>
+  </div>
+
+  <section id="excelPreviewPanel" class="panel hidden">
+    <div class="panel-head excel-preview-head">
+      <div>
+        <h3>File Preview Workspace</h3>
+        <p>Upload a CSV or Excel file to inspect its contents before saving or processing any records.</p>
+      </div>
+      <div class="page-actions">
+        <input id="excelFileInput" type="file" accept=".csv,.xls,.xlsx,text/csv,application/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" />
+        <button class="btn btn-secondary" id="uploadExcelBtn"><i class="fa-solid fa-file-arrow-up"></i>Upload CSV/Excel</button>
+        <button class="btn btn-ghost hidden" id="clearExcelPreviewBtn"><i class="fa-solid fa-xmark"></i>Clear Preview</button>
+      </div>
+    </div>
+
+    <div id="excelPreviewSummary" class="excel-preview-summary">
+      <div class="mini-pill"><i class="fa-solid fa-sheet-plastic"></i>Preview only</div>
+      <p id="excelPreviewMeta">Choose a `.csv`, `.xls`, or `.xlsx` file to preview its contents here.</p>
+    </div>
+
+    <div id="excelPreviewError" class="excel-preview-error hidden" aria-live="polite"></div>
+    <div id="excelPreviewLoading" class="excel-preview-loading hidden" aria-live="polite">
+      <div class="excel-spinner"></div>
+      <div>
+        <strong>Reading data file...</strong>
+        <p>Large CSV or Excel files can take a little longer. Please keep this page open.</p>
+      </div>
+    </div>
+
+    <div id="excelPreviewContent" class="excel-preview-content hidden">
+      <div id="excelSubmissionWorkspace" class="excel-submission-workspace hidden">
+        <div class="panel-head">
+          <div>
+            <h4>Submission Fix Workspace</h4>
+            <p>Fix typos, remove invalid rows, remap inconsistent columns, and recheck the incoming file before final review.</p>
+          </div>
+          <div class="submission-actions">
+            <span id="excelPreviewDirtyState" class="mini-pill"><i class="fa-solid fa-pen-ruler"></i>No unsaved changes</span>
+            <button class="btn btn-ghost" id="excelRecheckIssuesBtn" type="button"><i class="fa-solid fa-rotate-right"></i>Recheck Issues</button>
+            <button class="btn btn-success" id="excelSaveEditsBtn" type="button"><i class="fa-solid fa-floppy-disk"></i>Save Preview Fixes</button>
+          </div>
+        </div>
+
+        <div class="excel-submission-grid">
+          <section class="excel-submission-panel">
+            <div class="panel-head">
+              <div>
+                <h4>Column Mapping</h4>
+                <p id="excelMappingHelp">Choose a template if you need to map inconsistent headers to the correct system fields.</p>
+              </div>
+              <div class="filter-box send-data-template-box">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <select id="excelMappingTemplateSelect">
+                  <option value="">Auto detect template</option>
+                </select>
+              </div>
+            </div>
+            <div id="excelMappingFields" class="send-data-mapping-grid"></div>
+          </section>
+
+          <section class="excel-submission-panel">
+            <div class="panel-head">
+              <div>
+                <h4>Detected Issues</h4>
+                <p id="excelValidationProfile">Issue analysis will appear here for opened user submissions.</p>
+              </div>
+              <span id="excelValidationIssueCount" class="mini-pill"><i class="fa-solid fa-triangle-exclamation"></i>0 issues</span>
+            </div>
+            <div id="excelValidationList" class="list-stack"></div>
+          </section>
+
+          <section class="excel-submission-panel">
+            <div class="panel-head">
+              <div>
+                <h4>Review History</h4>
+                <p id="excelReviewHistoryMeta">Track who reviewed this file, when they touched it, and what changed at each step.</p>
+              </div>
+              <span id="excelReviewHistoryCount" class="mini-pill"><i class="fa-solid fa-timeline"></i>0 events</span>
+            </div>
+            <div id="excelReviewHistoryList" class="list-stack"></div>
+          </section>
+
+          <section class="excel-submission-panel">
+            <div class="panel-head">
+              <div>
+                <h4>Version Comparison</h4>
+                <p id="excelVersionComparisonMeta">Compare this upload against the previous version from the same sender.</p>
+              </div>
+              <span id="excelVersionComparisonPill" class="mini-pill"><i class="fa-solid fa-code-compare"></i>No prior version</span>
+            </div>
+            <div id="excelVersionComparisonSummary" class="submission-version-summary"></div>
+            <div id="excelVersionComparisonList" class="list-stack"></div>
+          </section>
+        </div>
+      </div>
+
+      <div class="excel-preview-toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="excelPreviewSearch" type="text" placeholder="Search across the previewed rows" />
+        </div>
+        <div class="excel-preview-stats">
+          <span id="excelPreviewRowsCount" class="mini-pill"><i class="fa-solid fa-table-list"></i>0 rows</span>
+          <span id="excelPreviewColumnsCount" class="mini-pill"><i class="fa-solid fa-table-columns"></i>0 columns</span>
+        </div>
+      </div>
+
+      <div id="excelPreviewTableWrap" class="table-wrap excel-preview-table-wrap"></div>
+
+      <div class="excel-preview-footer">
+        <p id="excelPreviewHint" class="excel-preview-hint">Preview the uploaded file here before taking any further action.</p>
+        <div class="excel-pagination">
+          <button class="btn btn-ghost" id="excelPrevPageBtn"><i class="fa-solid fa-chevron-left"></i>Previous</button>
+          <span id="excelPreviewPageInfo" class="mini-pill"><i class="fa-solid fa-book-open"></i>Page 1 of 1</span>
+          <button class="btn btn-ghost" id="excelNextPageBtn">Next<i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="incomingDataPanel" class="panel hidden">
+    <div class="panel-head">
+      <div>
+        <h3>Incoming Data</h3>
+        <p>CSV and Excel files sent by users appear here for admin review and preview.</p>
+      </div>
+      <span id="incomingDataCount" class="mini-pill"><i class="fa-solid fa-inbox"></i>0 incoming</span>
+    </div>
+    <div class="incoming-data-toolbar">
+      <div class="incoming-data-filters">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="incomingDataSearch" type="text" placeholder="Search by file name, sheet, sender, or email" />
+        </div>
+        <div class="filter-box">
+          <i class="fa-solid fa-filter"></i>
+          <select id="incomingDataStatusFilter">
+            <option value="">All statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Review">In Review</option>
+            <option value="Needs Revision">Needs Revision</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="incoming-data-summary">
+        <span id="incomingDataPendingCount" class="mini-pill"><i class="fa-solid fa-hourglass-half"></i>0 open</span>
+        <span id="incomingDataReviewedCount" class="mini-pill"><i class="fa-solid fa-circle-check"></i>0 closed</span>
+      </div>
+    </div>
+    <div class="incoming-data-advanced">
+      <div class="incoming-data-filters incoming-data-filters-advanced">
+        <div class="field compact-field">
+          <label for="incomingDataUserFilter">Submitted by</label>
+          <div class="filter-box">
+            <i class="fa-solid fa-user"></i>
+            <select id="incomingDataUserFilter">
+              <option value="">All admins and users</option>
+            </select>
+          </div>
+        </div>
+        <div class="field compact-field">
+          <label for="incomingDataFileTypeFilter">File type</label>
+          <div class="filter-box">
+            <i class="fa-solid fa-file-excel"></i>
+            <select id="incomingDataFileTypeFilter">
+              <option value="">All file types</option>
+            </select>
+          </div>
+        </div>
+        <div class="field compact-field">
+          <label for="incomingDataDateFrom">Received from</label>
+          <input id="incomingDataDateFrom" class="form-control" type="date" />
+        </div>
+        <div class="field compact-field">
+          <label for="incomingDataDateTo">Received to</label>
+          <input id="incomingDataDateTo" class="form-control" type="date" />
+        </div>
+      </div>
+      <div class="incoming-data-saved">
+        <div class="incoming-data-saved-head">
+          <div>
+            <strong>Saved filters</strong>
+            <p>Store reusable admin views like "Pending this week".</p>
+          </div>
+          <span id="incomingDataActiveFilterPill" class="mini-pill hidden"><i class="fa-solid fa-bookmark"></i>No preset active</span>
+        </div>
+        <div class="incoming-data-saved-toolbar">
+          <div class="field compact-field incoming-data-saved-name">
+            <label for="incomingDataSavedFilterName">Filter name</label>
+            <input id="incomingDataSavedFilterName" class="form-control" type="text" placeholder="e.g. Pending this week" maxlength="60" />
+          </div>
+          <div class="submission-actions incoming-data-saved-actions">
+            <button class="btn btn-secondary" id="incomingDataSaveFilterBtn" type="button"><i class="fa-solid fa-bookmark"></i>Save Current Filter</button>
+            <button class="btn btn-ghost" id="incomingDataClearFiltersBtn" type="button"><i class="fa-solid fa-rotate-left"></i>Clear Filters</button>
+          </div>
+        </div>
+        <div id="incomingDataSavedFiltersList" class="saved-filter-list"></div>
+      </div>
+    </div>
+    <div class="incoming-data-bulk-toolbar">
+      <label class="incoming-data-select-toggle">
+        <input id="incomingDataSelectAll" type="checkbox" />
+        <span>Select visible files</span>
+      </label>
+      <span id="incomingDataSelectedCount" class="mini-pill"><i class="fa-solid fa-check-double"></i>0 selected</span>
+      <div class="field compact-field incoming-data-bulk-feedback">
+        <label for="incomingDataBulkFeedback">Batch feedback</label>
+        <input id="incomingDataBulkFeedback" class="form-control" type="text" placeholder="Required for bulk reject" />
+      </div>
+      <div class="submission-actions">
+        <button class="btn btn-success" id="incomingDataBulkApproveBtn" type="button"><i class="fa-solid fa-circle-check"></i>Approve All</button>
+        <button class="btn btn-danger" id="incomingDataBulkRejectBtn" type="button"><i class="fa-solid fa-circle-xmark"></i>Reject All</button>
+        <button class="btn btn-ghost" id="incomingDataBulkExportBtn" type="button"><i class="fa-solid fa-file-zipper"></i>Export All</button>
+      </div>
+      <span id="incomingDataBulkStatus" class="mini-pill"><i class="fa-solid fa-bolt"></i>No batch task running</span>
+    </div>
+    <div id="incomingDataList" class="list-stack"></div>
+  </section>
+</section>

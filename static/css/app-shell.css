@@ -1,0 +1,32 @@
+.app-shell { min-height: 100vh; }
+.main { margin-left: var(--sidebar-width); 
+    min-height: 100vh; 
+    padding: 24px; display: flex; 
+    flex-direction: column; 
+    gap: 22px; }
+.content { display: grid; 
+    gap: 22px; }
+.page { display: none; 
+    gap: 22px; }
+.page.active { display: grid; }
+.page-head { display: flex; 
+    align-items: flex-start; 
+    justify-content: space-between; 
+    gap: 16px; 
+    flex-wrap: wrap; }
+.page-head p { color: var(--muted); 
+    margin-top: 6px; 
+    line-height: 1.6; }
+.page-actions { display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    align-items: center; }
+.overlay { position: fixed; 
+    inset: 0; 
+    background: rgba(2,6,23,0.4); 
+    z-index: 20; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: opacity 0.2s ease; }
+.overlay.show { opacity: 1; 
+    pointer-events: auto; }

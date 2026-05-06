@@ -1,0 +1,25 @@
+.toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 12px; }
+.filter-box select { min-width: 190px; padding-left: 42px; appearance: none; }
+.table-card { padding: 10px; overflow: hidden; }
+.table-wrap { overflow-x: auto; border-radius: 18px; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+thead th { text-align: left; padding: 16px 18px; color: var(--muted); font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(148,163,184,0.08); border-bottom: 1px solid var(--border); }
+tbody td { padding: 16px 18px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:hover { background: rgba(37,99,235,0.04); }
+.cell-title { display: grid; gap: 4px; }
+.cell-title strong { font-size: 0.98rem; }
+.cell-title small { color: var(--muted); line-height: 1.5; }
+.table-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.action-btn { padding: 10px 12px; border-radius: 12px; font-size: 0.88rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+.thumb { width: 68px; height: 68px; border-radius: 18px; overflow: hidden; background: rgba(148,163,184,0.12); display: grid; place-items: center; color: var(--muted); border: 1px solid var(--border); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.status-chip, .type-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; font-weight: 700; font-size: 0.84rem; white-space: nowrap; }
+.status-active, .status-checked-in, .status-record { background: rgba(16,185,129,0.12); color: var(--success); }
+.status-inactive, .status-checked-out { background: rgba(148,163,184,0.14); color: var(--muted); }
+.status-pending { background: rgba(245,158,11,0.14); color: #b45309; }
+.status-admin, .status-user, .status-warning, .status-visitor { background: rgba(245,158,11,0.14); color: #b45309; }
+body.dark .status-pending, body.dark .status-admin, body.dark .status-user, body.dark .status-warning, body.dark .status-visitor { color: #fcd34d; }
+.status-recycle { background: rgba(239,68,68,0.12); color: var(--danger); }
+.empty-state { padding: 36px 20px; text-align: center; color: var(--muted); }
+.empty-state i { font-size: 2rem; margin-bottom: 12px; opacity: 0.8; }
+.cards-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }

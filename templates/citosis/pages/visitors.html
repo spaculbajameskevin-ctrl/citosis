@@ -1,0 +1,46 @@
+<section id="visitors" class="page">
+  <div class="page-head">
+    <div>
+      <h2>Visitors</h2>
+      <p>Track guest entries, their destination, origin, visit schedule, and attendance status.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" id="exportVisitorsExcelBtn"><i class="fa-solid fa-file-excel"></i>Export Excel</button>
+      <button class="btn btn-primary" id="addVisitorBtn"><i class="fa-solid fa-user-plus"></i>Add Visitor</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="visitorSearch" type="text" placeholder="Search visitor, origin, or destination" />
+    </div>
+    <div class="filter-box">
+      <i class="fa-solid fa-filter"></i>
+      <select id="visitorStatusFilter">
+        <option value="">All statuses</option>
+        <option>Checked In</option>
+        <option>Checked Out</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="clearVisitorFilters"><i class="fa-solid fa-eraser"></i>Reset Filters</button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Visitor</th>
+            <th>Destination</th>
+            <th>Origin</th>
+            <th>Visit Schedule</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="visitorTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
