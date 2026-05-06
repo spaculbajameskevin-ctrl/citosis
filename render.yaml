@@ -4,14 +4,14 @@ services:
     runtime: python
     plan: free
     buildCommand: bash build.sh
-    startCommand: gunicorn citosis_pro.wsgi:application
+    startCommand: gunicorn citosis_pro.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: citosis-pro.onrender.com
+        value: .onrender.com
       - key: APP_URL
         value: https://citosis-pro.onrender.com
       - key: CORS_ALLOW_ALL_ORIGINS
@@ -19,7 +19,7 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         value: https://citosis-pro.onrender.com
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://citosis-pro.onrender.com
+        value: https://*.onrender.com
       - key: SESSION_COOKIE_SECURE
         value: "True"
       - key: CSRF_COOKIE_SECURE
