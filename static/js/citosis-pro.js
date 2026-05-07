@@ -7314,6 +7314,11 @@
     if (error.payload) {
       const payload = error.payload;
       if (typeof payload.detail === 'string') {
+        if (payload.detail.trim().startsWith('<')) {
+          return error.status >= 500
+            ? 'The server hit an error. Please try again, or ask an admin to check the Render logs.'
+            : 'The server returned an unexpected response. Please refresh and try again.';
+        }
         return payload.detail;
       }
       const firstField = Object.keys(payload)[0];

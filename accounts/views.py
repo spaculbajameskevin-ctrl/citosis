@@ -1,10 +1,10 @@
 import smtplib
+import logging
 
 from django.conf import settings
 from django.contrib.auth import password_validation
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
@@ -54,6 +54,9 @@ from accounts.serializers import (
 from audit.services import log_action, soft_delete_to_recycle
 from audit.services import create_user_registration_notifications
 from citosis_pro.common import RecycleItemTypeChoices, UserStatusChoices
+
+
+logger = logging.getLogger(__name__)
 
 
 def _find_user_by_login(login_value):
@@ -253,30 +256,54 @@ class RegistrationView(APIView):
             )
 
         serializer = RegistrationSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
         try:
-            with transaction.atomic():
-                user = serializer.save()
-                challenge = issue_email_verification_challenge(user)
-                send_email_verification_email(user, challenge)
-                log_action(user, 'User registration request', f'{user.email} submitted a new account request.', request)
-                create_user_registration_notifications(user, send_email=False)
-        except smtplib.SMTPAuthenticationError:
-            return Response(
-                {'detail': 'Gmail rejected the email login. Check that EMAIL_HOST_USER is the same Google account that created the 16-character App Password.'},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            raise
         except Exception:
+            logger.exception('Registration validation failed unexpectedly.')
             return Response(
-                {'detail': 'We could not send the verification email right now. Check your email SMTP settings, then try registering again.'},
+                {'detail': 'We could not validate your registration right now. Please try again in a moment.'},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-        detail = 'Registration submitted successfully. Check your email to verify your address, then wait for Super Admin approval.'
+        try:
+            user = serializer.save()
+        except Exception:
+            logger.exception('Registration user creation failed.')
+            return Response(
+                {'detail': 'We could not create your account right now. Please try again in a moment.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        verification_email_sent = False
+        notification_created = False
+        try:
+            challenge = issue_email_verification_challenge(user)
+            send_email_verification_email(user, challenge)
+            verification_email_sent = True
+        except smtplib.SMTPAuthenticationError:
+            logger.exception('Gmail rejected registration verification email.')
+        except Exception:
+            logger.exception('Registration verification email failed.')
+
+        try:
+            log_action(user, 'User registration request', f'{user.email} submitted a new account request.', request)
+            create_user_registration_notifications(user, send_email=False)
+            notification_created = True
+        except Exception:
+            logger.exception('Registration notification creation failed.')
+
+        detail = (
+            'Registration submitted successfully. Check your email to verify your address, then wait for Super Admin approval.'
+            if verification_email_sent
+            else 'Registration submitted successfully, but we could not send the verification email right now. Ask an admin to check email settings, then use Resend Verification.'
+        )
         return Response(
             {
                 'detail': detail,
-                'verification_email_sent': True,
+                'verification_email_sent': verification_email_sent,
+                'admin_notification_created': notification_created,
                 'user': UserSerializer(user, context={'request': request}).data,
             },
             status=status.HTTP_201_CREATED,
