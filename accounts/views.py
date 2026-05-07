@@ -167,14 +167,19 @@ class LoginView(APIView):
             # In development with console email backend, skip 2FA
             if _should_skip_2fa_for_dev():
                 return _build_login_response(user, request)
-            
-            challenge, code = issue_super_admin_two_factor_challenge(user)
+
             try:
+                challenge, code = issue_super_admin_two_factor_challenge(user)
                 send_two_factor_code_email(user, code)
             except Exception:
-                challenge.delete()
+                logger.exception('Super admin 2FA initiation failed.')
+                if 'challenge' in locals() and challenge:
+                    try:
+                        challenge.delete()
+                    except Exception:
+                        logger.exception('Failed to clean up 2FA challenge after error.')
                 return Response(
-                    {'detail': 'We could not send your Super Admin verification code right now. Please try again in a moment.'},
+                    {'detail': 'We could not start Super Admin verification right now. Check Render email/database setup, then try again.'},
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
             return Response(
@@ -227,13 +232,18 @@ class ResendTwoFactorView(APIView):
 
         user = challenge.user
         mark_challenge_used(challenge)
-        new_challenge, code = issue_super_admin_two_factor_challenge(user)
         try:
+            new_challenge, code = issue_super_admin_two_factor_challenge(user)
             send_two_factor_code_email(user, code)
         except Exception:
-            new_challenge.delete()
+            logger.exception('Super admin 2FA resend failed.')
+            if 'new_challenge' in locals() and new_challenge:
+                try:
+                    new_challenge.delete()
+                except Exception:
+                    logger.exception('Failed to clean up resent 2FA challenge after error.')
             return Response(
-                {'detail': 'We could not resend the verification code right now. Please try signing in again.'},
+                {'detail': 'We could not resend the verification code right now. Check Render email/database setup, then try signing in again.'},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
         return Response(

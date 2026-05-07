@@ -1,4 +1,5 @@
 import re
+from unittest.mock import patch
 
 from django.core import mail
 from django.test import override_settings
@@ -353,6 +354,31 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
         self.assertNotIn('requires_two_factor', response.data)
+
+    @patch('accounts.views.issue_super_admin_two_factor_challenge', side_effect=RuntimeError('2FA storage unavailable'))
+    def test_super_admin_login_returns_503_when_two_factor_setup_fails(self, mocked_issue):
+        admin_user = User.objects.create_user(
+            email='broken2fa@example.com',
+            password='strongpass123',
+            username='broken2fa',
+            name='Broken 2FA',
+            office=ESTABLISHMENT_OPTIONS[8],
+            role=RoleChoices.SUPER_ADMIN,
+            status=UserStatusChoices.ACTIVE,
+            email_verified_at=timezone.now(),
+        )
+
+        response = self.client.post(
+            '/api/auth/login/',
+            {
+                'username': admin_user.email,
+                'password': 'strongpass123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertIn('Super Admin verification', response.data['detail'])
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
