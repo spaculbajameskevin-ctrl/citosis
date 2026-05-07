@@ -290,6 +290,7 @@ class RegistrationApiTests(APITestCase):
         )
         self.assertEqual(locked_response.status_code, 423)
 
+    @override_settings(DEBUG=False, SKIP_SUPER_ADMIN_2FA=False, REQUIRE_SUPER_ADMIN_2FA=True)
     def test_super_admin_login_requires_two_factor_and_accepts_code(self):
         admin_user = User.objects.create_user(
             email='superadmin@example.com',
@@ -355,6 +356,33 @@ class RegistrationApiTests(APITestCase):
         self.assertIn('token', response.data)
         self.assertNotIn('requires_two_factor', response.data)
 
+    @override_settings(DEBUG=False, REQUIRE_SUPER_ADMIN_2FA=False, EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend')
+    def test_super_admin_login_can_skip_two_factor_when_disabled_by_setting(self):
+        admin_user = User.objects.create_user(
+            email='renderadmin@example.com',
+            password='strongpass123',
+            username='renderadmin',
+            name='Render Admin',
+            office=ESTABLISHMENT_OPTIONS[8],
+            role=RoleChoices.SUPER_ADMIN,
+            status=UserStatusChoices.ACTIVE,
+            email_verified_at=timezone.now(),
+        )
+
+        response = self.client.post(
+            '/api/auth/login/',
+            {
+                'username': admin_user.email,
+                'password': 'strongpass123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+        self.assertNotIn('requires_two_factor', response.data)
+
+    @override_settings(DEBUG=False, SKIP_SUPER_ADMIN_2FA=False, REQUIRE_SUPER_ADMIN_2FA=True)
     @patch('accounts.views.issue_super_admin_two_factor_challenge', side_effect=RuntimeError('2FA storage unavailable'))
     def test_super_admin_login_returns_503_when_two_factor_setup_fails(self, mocked_issue):
         admin_user = User.objects.create_user(

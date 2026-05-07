@@ -101,6 +101,12 @@ def _should_skip_2fa_for_dev() -> bool:
     return is_console_backend
 
 
+def _should_require_super_admin_2fa() -> bool:
+    if getattr(settings, 'SKIP_SUPER_ADMIN_2FA', False):
+        return False
+    return getattr(settings, 'REQUIRE_SUPER_ADMIN_2FA', True)
+
+
 def _is_missing_gmail_app_password() -> bool:
     if 'smtp' not in settings.EMAIL_BACKEND.lower():
         return False
@@ -164,8 +170,7 @@ class LoginView(APIView):
             )
 
         if is_super_admin_user(user):
-            # In development with console email backend, skip 2FA
-            if _should_skip_2fa_for_dev():
+            if _should_skip_2fa_for_dev() or not _should_require_super_admin_2fa():
                 return _build_login_response(user, request)
 
             try:
