@@ -30,6 +30,8 @@ services:
         value: "True"
       - key: EMAIL_BACKEND
         value: django.core.mail.backends.smtp.EmailBackend
+      - key: EMAIL_DELIVERY_METHOD
+        value: resend
       - key: EMAIL_HOST
         value: smtp.gmail.com
       - key: EMAIL_PORT
@@ -43,6 +45,8 @@ services:
       - key: EMAIL_HOST_USER
         sync: false
       - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: RESEND_API_KEY
         sync: false
       - key: DEFAULT_FROM_EMAIL
         sync: false

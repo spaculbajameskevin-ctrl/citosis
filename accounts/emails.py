@@ -1,3 +1,7 @@
+import json
+from html import escape
+from urllib import error, request
+
 from django.conf import settings
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
@@ -7,6 +11,62 @@ from django.utils.http import urlsafe_base64_encode
 
 def _get_app_url():
     return getattr(settings, 'APP_URL', 'http://localhost:8000').rstrip('/')
+
+
+def _render_basic_html(message):
+    paragraphs = [segment.strip() for segment in str(message or '').split('\n\n') if segment.strip()]
+    if not paragraphs:
+        return '<p></p>'
+    return ''.join(f'<p>{escape(paragraph).replace(chr(10), "<br>")}</p>' for paragraph in paragraphs)
+
+
+def _send_via_resend(subject, message, recipient_list):
+    api_key = getattr(settings, 'RESEND_API_KEY', '')
+    if not api_key:
+        raise RuntimeError('RESEND_API_KEY is not configured.')
+
+    payload = json.dumps(
+        {
+            'from': settings.DEFAULT_FROM_EMAIL,
+            'to': list(recipient_list),
+            'subject': subject,
+            'text': message,
+            'html': _render_basic_html(message),
+        }
+    ).encode('utf-8')
+    http_request = request.Request(
+        getattr(settings, 'RESEND_API_URL', 'https://api.resend.com/emails'),
+        data=payload,
+        headers={
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json',
+        },
+        method='POST',
+    )
+    timeout = int(getattr(settings, 'EMAIL_TIMEOUT', 10))
+    try:
+        with request.urlopen(http_request, timeout=timeout) as response:
+            response.read()
+    except error.HTTPError as exc:
+        response_body = exc.read().decode('utf-8', errors='replace')
+        raise RuntimeError(f'Resend API rejected the email request: {response_body}') from exc
+    except error.URLError as exc:
+        raise RuntimeError(f'Resend API request failed: {exc.reason}') from exc
+
+
+def _send_app_email(subject, message, recipient_list):
+    delivery_method = getattr(settings, 'EMAIL_DELIVERY_METHOD', 'smtp')
+    if delivery_method == 'resend':
+        _send_via_resend(subject, message, recipient_list)
+        return
+
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        recipient_list,
+        fail_silently=False,
+    )
 
 
 def send_account_setup_email(user):
@@ -27,13 +87,7 @@ def send_account_setup_email(user):
         'If you did not expect this email, please contact your administrator.'
     )
 
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
-    )
+    _send_app_email(subject, message, [user.email])
 
 
 def send_email_verification_email(user, challenge):
@@ -49,7 +103,7 @@ def send_email_verification_email(user, challenge):
         'After your email is verified and your account is approved by a Super Admin, you can sign in.\n'
         'If you did not request this, you can ignore this email.'
     )
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+    _send_app_email(subject, message, [user.email])
 
 
 def send_password_reset_email(user, challenge):
@@ -64,7 +118,7 @@ def send_password_reset_email(user, challenge):
         f'Use this link to reset it: {reset_link}\n\n'
         'If you did not request a password reset, you can ignore this email.'
     )
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+    _send_app_email(subject, message, [user.email])
 
 
 def send_two_factor_code_email(user, code):
@@ -78,7 +132,7 @@ def send_two_factor_code_email(user, code):
         f'{code}\n\n'
         'This code expires soon. If you did not try to sign in, change your password immediately.'
     )
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+    _send_app_email(subject, message, [user.email])
 
 
 def send_registration_approved_email(user):
@@ -92,4 +146,4 @@ def send_registration_approved_email(user):
         'If your email is already verified, you can sign in now.\n'
         'If your email is not verified yet, please use the latest verification email in your inbox first.'
     )
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+    _send_app_email(subject, message, [user.email])

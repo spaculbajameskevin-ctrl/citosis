@@ -1,5 +1,6 @@
 import re
 from unittest.mock import patch
+import json
 
 from django.core import mail
 from django.test import override_settings
@@ -26,6 +27,17 @@ def extract_verification_token(body):
 def extract_six_digit_code(body):
     match = re.search(r'(\d{6})', body)
     return match.group(1) if match else ''
+
+
+class DummyUrlOpenResponse:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def read(self):
+        return json.dumps({'id': 'email_123'}).encode('utf-8')
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -355,6 +367,40 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
         self.assertNotIn('requires_two_factor', response.data)
+
+    @override_settings(
+        DEBUG=False,
+        SKIP_SUPER_ADMIN_2FA=False,
+        REQUIRE_SUPER_ADMIN_2FA=True,
+        EMAIL_DELIVERY_METHOD='resend',
+        RESEND_API_KEY='re_test_key',
+        DEFAULT_FROM_EMAIL='CITOSIS PRO <no-reply@example.com>',
+    )
+    @patch('accounts.emails.request.urlopen', return_value=DummyUrlOpenResponse())
+    def test_super_admin_login_uses_resend_api_for_two_factor(self, mocked_urlopen):
+        admin_user = User.objects.create_user(
+            email='resendadmin@example.com',
+            password='strongpass123',
+            username='resendadmin',
+            name='Resend Admin',
+            office=ESTABLISHMENT_OPTIONS[8],
+            role=RoleChoices.SUPER_ADMIN,
+            status=UserStatusChoices.ACTIVE,
+            email_verified_at=timezone.now(),
+        )
+
+        response = self.client.post(
+            '/api/auth/login/',
+            {
+                'username': admin_user.email,
+                'password': 'strongpass123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['requires_two_factor'])
+        self.assertEqual(mocked_urlopen.call_count, 1)
 
     @override_settings(DEBUG=False, REQUIRE_SUPER_ADMIN_2FA=False, EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend')
     def test_super_admin_login_can_skip_two_factor_when_disabled_by_setting(self):
