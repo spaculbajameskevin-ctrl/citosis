@@ -1,21 +1,33 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / '.env', override=True)
+load_dotenv(BASE_DIR / '.env', override=False)
 
 
 def env_list(name, default=''):
     return [item.strip() for item in os.getenv(name, default).split(',') if item.strip()]
 
 
+def add_allowed_host(host):
+    if host and host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
+
+
 SECRET_KEY = os.getenv('SECRET_KEY', 'unsafe-dev-secret-key')
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+IS_RENDER = os.getenv('RENDER', '').lower() == 'true'
+DEBUG = False if IS_RENDER else os.getenv('DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', '127.0.0.1,localhost,testserver')
+RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+add_allowed_host(RENDER_EXTERNAL_HOSTNAME)
+if IS_RENDER:
+    add_allowed_host('.onrender.com')
 use_sqlite = os.getenv('USE_SQLITE', 'True').lower() == 'true'
 APP_URL = os.getenv('APP_URL', 'http://localhost:8000').rstrip('/')
+add_allowed_host(urlparse(APP_URL).hostname)
 
 if not use_sqlite:
     try:
