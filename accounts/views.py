@@ -109,6 +109,8 @@ def _should_require_super_admin_2fa() -> bool:
 
 
 def _is_missing_gmail_app_password() -> bool:
+    if getattr(settings, 'EMAIL_DELIVERY_METHOD', 'smtp') != 'smtp':
+        return False
     if 'smtp' not in settings.EMAIL_BACKEND.lower():
         return False
     if str(getattr(settings, 'EMAIL_HOST', '') or '').lower() != 'smtp.gmail.com':

@@ -565,6 +565,12 @@ body.dark .toast i {
   scrollbar-width: thin;
 }
 
+.recipient-dropdown.form-control {
+  min-height: 40px;
+  padding: 10px 42px 10px 14px;
+  overflow: visible;
+}
+
 .recipient-select option {
   min-height: 36px;
   padding: 9px 12px;
@@ -656,7 +662,16 @@ tbody tr:hover {
 }
 
 .table-actions {
+  display: flex;
+  align-items: center;
   gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.table-actions .action-btn {
+  width: auto;
+  flex: 0 0 auto;
 }
 
 .action-btn {

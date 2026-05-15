@@ -16,6 +16,11 @@
   background: var(--surface);
   scrollbar-width: thin;
 }
+.recipient-dropdown.form-control {
+  min-height: 44px;
+  padding: 12px 42px 12px 14px;
+  overflow: visible;
+}
 .recipient-select option {
   min-height: 36px;
   padding: 9px 12px;

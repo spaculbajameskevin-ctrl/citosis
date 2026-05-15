@@ -2817,11 +2817,14 @@
     if (dom.pageDataRequestEstablishments) {
       dom.pageDataRequestEstablishments.disabled = !establishments.length;
       dom.pageDataRequestEstablishments.innerHTML = establishments.length
-        ? establishments.map((establishment) => `
+        ? `
+          <option value="">Select active establishment</option>
+          ${establishments.map((establishment) => `
             <option value="${escapeAttribute(establishment.name)}">
               ${escapeHtml(`${establishment.name} - ${establishment.count} active user${establishment.count === 1 ? '' : 's'}`)}
             </option>
-          `).join('')
+          `).join('')}
+        `
         : '<option value="" disabled>No active establishments available</option>';
     }
     if (dom.pageDataRequestDueDate && !dom.pageDataRequestDueDate.min) {
@@ -6872,11 +6875,14 @@
     const targets = Array.isArray(state.dataRequestTargets) ? state.dataRequestTargets : [];
     const establishments = getActiveDataRequestEstablishments(targets);
     const establishmentOptions = establishments.length
-      ? establishments.map((establishment) => `
+      ? `
+        <option value="">Select active establishment</option>
+        ${establishments.map((establishment) => `
           <option value="${escapeAttribute(establishment.name)}">
             ${escapeHtml(`${establishment.name} - ${establishment.count} active user${establishment.count === 1 ? '' : 's'}`)}
           </option>
-        `).join('')
+        `).join('')}
+      `
       : '<option value="" disabled>No active establishments available</option>';
     const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
@@ -6888,9 +6894,10 @@
         <div class="modal-grid">
           <div class="field span-2">
             <label for="dataRequestEstablishments">Recipients</label>
-            <select class="form-control recipient-select" id="dataRequestEstablishments" name="establishments" multiple size="6" ${establishments.length ? '' : 'disabled'}>
+            <select class="form-control recipient-select recipient-dropdown" id="dataRequestEstablishments" name="establishments" ${establishments.length ? '' : 'disabled'}>
               ${establishmentOptions}
             </select>
+            <p class="form-hint">Choose an active establishment. Every active user under that establishment receives the request.</p>
             <input type="hidden" name="recipient_scope" value="establishment">
           </div>
           <div class="field span-2">

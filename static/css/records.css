@@ -9,7 +9,8 @@ tbody tr:hover { background: rgba(37,99,235,0.04); }
 .cell-title { display: grid; gap: 4px; }
 .cell-title strong { font-size: 0.98rem; }
 .cell-title small { color: var(--muted); line-height: 1.5; }
-.table-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.table-actions { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; }
+.table-actions .action-btn { width: auto; flex: 0 0 auto; }
 .action-btn { padding: 10px 12px; border-radius: 12px; font-size: 0.88rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
 .thumb { width: 68px; height: 68px; border-radius: 18px; overflow: hidden; background: rgba(148,163,184,0.12); display: grid; place-items: center; color: var(--muted); border: 1px solid var(--border); }
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
