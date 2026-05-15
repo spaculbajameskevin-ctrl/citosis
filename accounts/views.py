@@ -25,7 +25,7 @@ from accounts.emails import (
     send_registration_approved_email,
     send_two_factor_code_email,
 )
-from accounts.models import AuthChallenge, User
+from accounts.models import AuthChallenge, Establishment, User
 from accounts.permissions import IsActiveSystemUser, IsSuperAdminOnly
 from accounts.security import (
     clear_login_lockout,
@@ -44,6 +44,7 @@ from accounts.security import (
 )
 from accounts.serializers import (
     ForgotPasswordSerializer,
+    EstablishmentSerializer,
     LoginSerializer,
     ProfileSerializer,
     RegistrationSerializer,
@@ -382,6 +383,25 @@ class MeView(APIView):
         user = serializer.save()
         log_action(request.user, 'Updated profile', 'Updated account profile details.', request)
         return Response(UserSerializer(user, context={'request': request}).data)
+
+
+class EstablishmentViewSet(viewsets.ModelViewSet):
+    serializer_class = EstablishmentSerializer
+    queryset = Establishment.objects.all().order_by('name')
+
+    def get_permissions(self):
+        if self.action in {'list', 'retrieve'}:
+            return [AllowAny()]
+        return [IsSuperAdminOnly()]
+
+    def perform_create(self, serializer):
+        establishment = serializer.save()
+        log_action(
+            self.request.user,
+            'Created establishment',
+            f'Added establishment #{establishment.pk} ({establishment.name}).',
+            self.request,
+        )
 
 
 class UserViewSet(viewsets.ModelViewSet):

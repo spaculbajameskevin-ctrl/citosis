@@ -1,4 +1,4 @@
-ESTABLISHMENT_OPTIONS = (
+DEFAULT_ESTABLISHMENT_OPTIONS = (
     'Adlaw Diversified Agri-Farm',
     'Capistrano Farm Resort',
     'Anpas Farm',
@@ -40,4 +40,34 @@ ESTABLISHMENT_OPTIONS = (
     'Bukidnon Breeze',
 )
 
-ESTABLISHMENT_OPTION_SET = frozenset(ESTABLISHMENT_OPTIONS)
+ESTABLISHMENT_OPTIONS = DEFAULT_ESTABLISHMENT_OPTIONS
+ESTABLISHMENT_OPTION_SET = frozenset(DEFAULT_ESTABLISHMENT_OPTIONS)
+
+
+def get_establishment_options():
+    from django.db.utils import OperationalError, ProgrammingError
+
+    from accounts.models import Establishment
+
+    try:
+        names = list(Establishment.objects.values_list('name', flat=True).order_by('name'))
+    except (OperationalError, ProgrammingError):
+        return DEFAULT_ESTABLISHMENT_OPTIONS
+    return tuple(names or DEFAULT_ESTABLISHMENT_OPTIONS)
+
+
+def is_known_establishment(name):
+    normalized = str(name or '').strip()
+    if not normalized:
+        return False
+    if normalized in ESTABLISHMENT_OPTION_SET:
+        return True
+
+    from django.db.utils import OperationalError, ProgrammingError
+
+    from accounts.models import Establishment
+
+    try:
+        return Establishment.objects.filter(name__iexact=normalized).exists()
+    except (OperationalError, ProgrammingError):
+        return False

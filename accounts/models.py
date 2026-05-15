@@ -56,6 +56,20 @@ class User(TimestampedSoftDeleteModel, AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
 
+class Establishment(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
+        db_table = 'establishments'
+
+    def __str__(self):
+        return self.name
+
+
 class AuthChallenge(models.Model):
     class PurposeChoices(models.TextChoices):
         EMAIL_VERIFICATION = 'email_verification', 'Email Verification'

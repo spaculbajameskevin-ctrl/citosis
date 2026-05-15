@@ -8,7 +8,7 @@ from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from accounts.establishments import ESTABLISHMENT_OPTIONS
-from accounts.models import AuthChallenge, User
+from accounts.models import AuthChallenge, Establishment, User
 from accounts.security import issue_email_verification_challenge
 from audit.models import SubmissionNotification
 from citosis_pro.common import RoleChoices, UserStatusChoices
@@ -118,6 +118,24 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('office', response.data)
         self.assertFalse(User.objects.filter(email='unknown-establishment@example.com').exists())
+
+    def test_registration_accepts_added_establishment(self):
+        Establishment.objects.create(name='Newly Added Lodge')
+
+        response = self.client.post(
+            '/api/auth/register/',
+            {
+                'name': 'Added Establishment User',
+                'email': 'added-establishment@example.com',
+                'office': 'Newly Added Lodge',
+                'password': 'strongpass123',
+                'password_confirm': 'strongpass123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(User.objects.filter(email='added-establishment@example.com', office='Newly Added Lodge').exists())
 
     def test_registration_allows_email_from_deleted_user(self):
         deleted_user = User.objects.create_user(
@@ -542,3 +560,51 @@ class UserStatusActionTests(APITestCase):
         self.assertNotEqual(deleted_user.email, 'admin-reuse@example.com')
         self.assertTrue(deleted_user.email.endswith('@deleted.citosis.local'))
         self.assertTrue(User.objects.filter(email='admin-reuse@example.com').exists())
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class EstablishmentApiTests(APITestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            email='establishment-admin@example.com',
+            password='strongpass123',
+            username='establishmentadmin',
+            name='Establishment Admin',
+            office=ESTABLISHMENT_OPTIONS[0],
+            role=RoleChoices.SUPER_ADMIN,
+            status=UserStatusChoices.ACTIVE,
+            email_verified_at=timezone.now(),
+        )
+
+    def test_anyone_can_list_establishments(self):
+        Establishment.objects.create(name='Public List Resort')
+
+        response = self.client.get('/api/establishments/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Public List Resort', {item['name'] for item in response.data})
+
+    def test_super_admin_can_add_establishment(self):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.post(
+            '/api/establishments/',
+            {'name': 'New Tourism Inn'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Establishment.objects.filter(name='New Tourism Inn').exists())
+
+    def test_duplicate_establishment_is_rejected_case_insensitively(self):
+        Establishment.objects.create(name='Duplicate Resort')
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.post(
+            '/api/establishments/',
+            {'name': 'duplicate resort'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('name', response.data)

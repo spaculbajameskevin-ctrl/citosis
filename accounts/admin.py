@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from accounts.models import AuthChallenge, User
+from accounts.models import AuthChallenge, Establishment, User
 
 
 @admin.register(User)
@@ -32,3 +32,10 @@ class AuthChallengeAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'user__username', 'token')
     list_filter = ('purpose', 'used_at')
     readonly_fields = ('id', 'token', 'code_hash', 'attempt_count', 'created_at', 'updated_at')
+
+
+@admin.register(Establishment)
+class EstablishmentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'created_at', 'updated_at')
+    search_fields = ('name',)
+    readonly_fields = ('created_at', 'updated_at')

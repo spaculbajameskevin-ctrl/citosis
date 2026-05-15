@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from accounts.establishments import ESTABLISHMENT_OPTIONS
+from accounts.establishments import get_establishment_options
 
 
 def index(request):
@@ -9,6 +9,6 @@ def index(request):
         'citosis/index.html',
         {
             'api_base': '/api',
-            'establishment_options': ESTABLISHMENT_OPTIONS,
+            'establishment_options': get_establishment_options(),
         },
     )

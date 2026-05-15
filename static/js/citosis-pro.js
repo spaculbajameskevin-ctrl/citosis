@@ -29,7 +29,7 @@
   const AUTH_TOKEN_KEY = 'citosis_token';
   const AUTH_USER_KEY = 'citosis_user';
   const DATA_UPDATE_SIGNAL_KEY = 'citosis_data_update_signal';
-  const establishmentOptions = readJsonScript('establishment-options-data');
+  let establishmentOptions = readJsonScript('establishment-options-data');
 
   const state = {
     token: null,
@@ -60,6 +60,7 @@
     records: [],
     visitors: [],
     users: [],
+    establishments: [],
     recycle: [],
     logs: [],
     currentPage: 'dashboard',
@@ -164,6 +165,7 @@
     dom.addRecordBtn = document.getElementById('addRecordBtn');
     dom.addVisitorBtn = document.getElementById('addVisitorBtn');
     dom.exportVisitorsExcelBtn = document.getElementById('exportVisitorsExcelBtn');
+    dom.addEstablishmentBtn = document.getElementById('addEstablishmentBtn');
     dom.addUserBtn = document.getElementById('addUserBtn');
     dom.emptyRecycleBtn = document.getElementById('emptyRecycleBtn');
     dom.exportLogsBtn = document.getElementById('exportLogsBtn');
@@ -477,6 +479,7 @@
 
     dom.addRecordBtn?.addEventListener('click', () => openEntityModal('record'));
     dom.addVisitorBtn.addEventListener('click', () => openEntityModal('visitor'));
+    dom.addEstablishmentBtn?.addEventListener('click', () => openEntityModal('establishment'));
     dom.addUserBtn.addEventListener('click', () => openEntityModal('user'));
     dom.quickAddButtons.forEach((button) => {
       button.addEventListener('click', () => openEntityModal(button.dataset.quickAdd));
@@ -1442,7 +1445,7 @@
       const logsRequest = canManageUsers()
         ? apiRequest(`/activity-logs/?limit=${encodeURIComponent(logLimit)}`)
         : Promise.resolve([]);
-      const [dashboard, submissions, notifications, dataRequestTargets, dataRequestHistory, records, visitors, users, recycle, logs] = await Promise.all([
+      const [dashboard, submissions, notifications, dataRequestTargets, dataRequestHistory, records, visitors, users, establishments, recycle, logs] = await Promise.all([
         dashboardRequest,
         submissionsRequest,
         notificationsRequest,
@@ -1451,6 +1454,7 @@
         apiRequest('/records/'),
         apiRequest('/visitors/'),
         safeRequest('/users/', []),
+        safeRequest('/establishments/', []),
         safeRequest('/recycle-bin/', []),
         logsRequest,
       ]);
@@ -1463,6 +1467,9 @@
       state.records = Array.isArray(records) ? records : [];
       state.visitors = Array.isArray(visitors) ? visitors : [];
       state.users = Array.isArray(users) ? users : [];
+      state.establishments = Array.isArray(establishments) ? establishments : [];
+      establishmentOptions = getKnownEstablishmentOptions();
+      syncRegisterEstablishmentOptions();
       state.recycle = Array.isArray(recycle) ? recycle : [];
       state.logs = Array.isArray(logs) ? logs : [];
 
@@ -3706,6 +3713,7 @@
     const canRequestData = canApproveSubmissions();
 
     toggleElement(dom.addUserBtn, canCreateUsers);
+    toggleElement(dom.addEstablishmentBtn, canCreateUsers);
     toggleElement(dom.addRecordBtn, false);
     toggleElement(dom.addVisitorBtn, canEdit);
     toggleElement(dom.uploadExcelBtn, canEdit);
@@ -6580,6 +6588,12 @@
         return;
       }
       config = buildUserModal(item);
+    } else if (entity === 'establishment') {
+      if (!canManageUsers()) {
+        showToast('Access denied', 'Only Super Admins can add establishments.', 'fa-solid fa-lock');
+        return;
+      }
+      config = buildEstablishmentModal();
     } else if (entity === 'profile') {
       if (!state.user) {
         showToast('Sign in required', 'Please sign in before editing your profile.', 'fa-solid fa-lock');
@@ -6794,6 +6808,22 @@
     };
   }
 
+  function buildEstablishmentModal() {
+    return {
+      title: 'Add Establishment',
+      subtitle: 'Create a registration option for a tourism establishment.',
+      saveText: '<i class="fa-solid fa-building-circle-plus"></i>Add Establishment',
+      body: `
+        <div class="modal-grid">
+          <div class="field span-2">
+            <label for="establishmentName">Establishment Name</label>
+            <input class="form-control" id="establishmentName" name="name" type="text" maxlength="255" placeholder="Enter establishment name" required>
+          </div>
+        </div>
+      `,
+    };
+  }
+
   function buildProfileModal() {
     const user = state.user || {};
     const selectedOffice = user.office || '';
@@ -6924,10 +6954,27 @@
       }
     };
     establishmentOptions.forEach(addOption);
+    state.establishments.forEach((establishment) => addOption(establishment.name || establishment));
     state.users.forEach((user) => addOption(user.office));
     state.dataRequestTargets.forEach((target) => addOption(target.office));
     addOption(extraValue);
     return Array.from(options).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: 'base' }));
+  }
+
+  function syncRegisterEstablishmentOptions() {
+    if (!dom.registerOffice) {
+      return;
+    }
+    const currentValue = dom.registerOffice.value;
+    dom.registerOffice.innerHTML = `
+      <option value="">Select your establishment</option>
+      ${establishmentOptions.map((option) => `
+        <option value="${escapeAttribute(option)}">${escapeHtml(option)}</option>
+      `).join('')}
+    `;
+    if (establishmentOptions.includes(currentValue)) {
+      dom.registerOffice.value = currentValue;
+    }
   }
 
   function handleRecordImagePreview(event) {
@@ -7030,6 +7077,21 @@
           body: JSON.stringify(payload),
         });
         showToast(isEditing ? 'User updated' : 'User added', 'User account saved successfully.');
+      }
+
+      if (entity === 'establishment') {
+        if (!canManageUsers()) {
+          throw new Error('Only Super Admins can add establishments.');
+        }
+        const formData = new FormData(dom.entityForm);
+        const payload = {
+          name: String(formData.get('name') || '').trim(),
+        };
+        await apiRequest('/establishments/', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        showToast('Establishment added', 'The establishment is now available for registration and user profiles.');
       }
 
       if (entity === 'profile') {

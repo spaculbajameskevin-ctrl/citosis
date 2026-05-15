@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from accounts.establishments import ESTABLISHMENT_OPTION_SET
+from accounts.establishments import is_known_establishment
 from accounts.emails import send_account_setup_email, send_email_verification_email
 from accounts.identity import tombstone_deleted_users_with_email
-from accounts.models import User
+from accounts.models import Establishment, User
 from accounts.security import issue_email_verification_challenge
 from citosis_pro.common import RoleChoices, UserStatusChoices
 
@@ -96,6 +96,24 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class EstablishmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Establishment
+        fields = ['id', 'name', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def validate_name(self, value):
+        normalized = ' '.join(str(value or '').split())
+        if not normalized:
+            raise serializers.ValidationError('Enter an establishment name.')
+        queryset = Establishment.objects.filter(name__iexact=normalized)
+        if self.instance:
+            queryset = queryset.exclude(pk=self.instance.pk)
+        if queryset.exists():
+            raise serializers.ValidationError('This establishment already exists.')
+        return normalized
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     profile_picture_url = serializers.SerializerMethodField()
 
@@ -155,7 +173,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def validate_office(self, value):
         normalized = value.strip()
-        if normalized not in ESTABLISHMENT_OPTION_SET:
+        if not is_known_establishment(normalized):
             raise serializers.ValidationError('Select a valid establishment from the list.')
         return normalized
 
