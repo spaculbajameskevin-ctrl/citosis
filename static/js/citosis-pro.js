@@ -74,6 +74,7 @@
   function init() {
     cacheDom();
     bindEvents();
+    bindImageFallbacks();
     loadTheme();
     startClock();
     restoreSession();
@@ -3703,6 +3704,32 @@
     }
     const compact = String(value || '?').trim().replace(/[^a-z0-9]/gi, '');
     return (compact || '?').slice(0, 2).toUpperCase();
+  }
+
+  function bindImageFallbacks() {
+    document.addEventListener('error', (event) => {
+      const image = event.target;
+      if (!image || image.tagName !== 'IMG') {
+        return;
+      }
+
+      const avatar = image.closest('.account-avatar, .sidebar-account-avatar');
+      if (avatar) {
+        avatar.textContent = buildAccountInitials(state.user?.name || state.user?.username || '?');
+        return;
+      }
+
+      const preview = image.closest('#profilePicturePreview');
+      if (preview) {
+        preview.innerHTML = '<div><i class="fa-regular fa-user"></i><p>Add a profile picture.</p></div>';
+        return;
+      }
+
+      const imagePreview = image.closest('.image-preview');
+      if (imagePreview) {
+        imagePreview.innerHTML = '<div><i class="fa-regular fa-image"></i><p>Image unavailable.</p></div>';
+      }
+    }, true);
   }
 
   function updateUiForRole() {
