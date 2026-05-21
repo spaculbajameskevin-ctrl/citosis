@@ -938,11 +938,11 @@
         }),
       });
       dom.registerForm.reset();
-      dom.registerSuccess.textContent = response?.detail || 'Registration submitted successfully. Verify your email and wait for admin approval before signing in.';
+      dom.registerSuccess.textContent = response?.detail || 'Registration submitted successfully. Wait for admin approval before signing in.';
       dom.forgotPasswordEmail.value = email;
       document.getElementById('username').value = email;
       setAuthMode('login');
-      showToast('Registration complete', 'Your request was submitted. Check your email for the verification link.');
+      showToast('Registration complete', 'Your request was submitted and is waiting for admin approval.');
     } catch (error) {
       dom.registerError.textContent = extractErrorMessage(error);
     } finally {
@@ -1012,7 +1012,7 @@
         method: 'POST',
         body: JSON.stringify({ email }),
       });
-      dom.forgotPasswordSuccess.textContent = response?.detail || 'If an account exists for that email, a verification email has been sent.';
+      dom.forgotPasswordSuccess.textContent = response?.detail || 'Email verification is no longer required.';
     } catch (error) {
       dom.forgotPasswordError.textContent = extractErrorMessage(error);
     }
@@ -6316,7 +6316,7 @@
   function buildUserRow(user) {
     const roleClass = getUserRoleBadgeClass(user.role);
     const statusClass = getUserStatusBadgeClass(user.status);
-    const emailVerifiedText = user.email_verified ? 'Email verified' : 'Email verification pending';
+    const emailVerifiedText = user.email_verified ? 'Email verified' : 'Email not required';
     const hasActiveLock = user.locked_until && new Date(user.locked_until).getTime() > Date.now();
     const lastSeenMarkup = user.last_login
       ? `

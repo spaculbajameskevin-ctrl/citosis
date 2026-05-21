@@ -143,7 +143,6 @@ def send_registration_approved_email(user):
     message = (
         f'Hello {user.name or user.username},\n\n'
         'Your CITOSIS PRO account request has been approved by a Super Admin.\n'
-        'If your email is already verified, you can sign in now.\n'
-        'If your email is not verified yet, please use the latest verification email in your inbox first.'
+        'You can sign in now.'
     )
     _send_app_email(subject, message, [user.email])

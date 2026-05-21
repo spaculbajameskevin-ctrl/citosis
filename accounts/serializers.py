@@ -1,10 +1,10 @@
+from django.utils import timezone
 from rest_framework import serializers
 
 from accounts.establishments import is_known_establishment
-from accounts.emails import send_account_setup_email, send_email_verification_email
+from accounts.emails import send_account_setup_email
 from accounts.identity import tombstone_deleted_users_with_email
 from accounts.models import Establishment, User
-from accounts.security import issue_email_verification_challenge
 from citosis_pro.common import RoleChoices, UserStatusChoices
 
 
@@ -62,12 +62,11 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_password(password)
         else:
             user.set_unusable_password()
+        if not user.email_verified_at:
+            user.email_verified_at = timezone.now()
         user.save()
         try:
-            if password:
-                challenge = issue_email_verification_challenge(user)
-                send_email_verification_email(user, challenge)
-            else:
+            if not password:
                 send_account_setup_email(user)
         except Exception:
             # Avoid blocking user creation if email fails.
@@ -84,15 +83,8 @@ class UserSerializer(serializers.ModelSerializer):
         if password:
             instance.set_password(password)
         if email_changed:
-            instance.email_verified_at = None
             tombstone_deleted_users_with_email(instance.email)
         instance.save()
-        if email_changed:
-            try:
-                challenge = issue_email_verification_challenge(instance)
-                send_email_verification_email(instance, challenge)
-            except Exception:
-                pass
         return instance
 
 
@@ -193,6 +185,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             username=username,
             role=RoleChoices.USER,
             status=UserStatusChoices.PENDING_APPROVAL,
+            email_verified_at=timezone.now(),
             **validated_data,
         )
         user.set_password(password)

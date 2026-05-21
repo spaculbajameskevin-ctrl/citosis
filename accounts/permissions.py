@@ -18,7 +18,6 @@ class IsActiveSystemUser(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
         )
 
 
@@ -30,7 +29,6 @@ class IsAdminDashboardUser(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
             and can_access_admin_dashboard(user)
         )
 
@@ -43,7 +41,6 @@ class CanEditDataPermission(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
             and can_edit_data(user)
         )
 
@@ -56,7 +53,6 @@ class CanApproveSubmissionPermission(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
             and can_approve_submissions(user)
         )
 
@@ -69,7 +65,6 @@ class CanDeleteDataPermission(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
             and can_delete_data(user)
         )
 
@@ -82,7 +77,6 @@ class IsSuperAdminOnly(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
             and can_manage_users(user)
         )
 
@@ -95,7 +89,6 @@ class IsSubmissionWorkspaceAdmin(BasePermission):
             and user.is_authenticated
             and user.deleted_at is None
             and user.status == UserStatusChoices.ACTIVE
-            and user.email_verified_at is not None
         ):
             return False
         if request.method in {'GET', 'HEAD', 'OPTIONS'}:

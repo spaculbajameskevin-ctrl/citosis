@@ -1,4 +1,3 @@
-import smtplib
 import logging
 
 from django.conf import settings
@@ -20,7 +19,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.emails import (
-    send_email_verification_email,
     send_password_reset_email,
     send_registration_approved_email,
     send_two_factor_code_email,
@@ -33,7 +31,6 @@ from accounts.security import (
     get_active_challenge_by_token,
     get_active_two_factor_challenge,
     is_super_admin_user,
-    issue_email_verification_challenge,
     issue_password_reset_challenge,
     issue_super_admin_two_factor_challenge,
     mark_challenge_used,
@@ -164,13 +161,6 @@ class LoginView(APIView):
                 {'detail': 'Your account is inactive. Please contact an administrator.'},
                 status=status.HTTP_403_FORBIDDEN,
             )
-        if not user.email_verified_at:
-            return Response(
-                {
-                    'detail': f'Your email is not verified yet. Check the verification link sent to {mask_email_address(user.email)} or request a new one.',
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
 
         if is_super_admin_user(user):
             if _should_skip_2fa_for_dev() or not _should_require_super_admin_2fa():
@@ -221,9 +211,6 @@ class VerifyTwoFactorView(APIView):
         if user.status != UserStatusChoices.ACTIVE:
             mark_challenge_used(challenge)
             return Response({'detail': 'This account can no longer sign in.'}, status=status.HTTP_403_FORBIDDEN)
-        if not user.email_verified_at:
-            mark_challenge_used(challenge)
-            return Response({'detail': 'Please verify your email before signing in.'}, status=status.HTTP_403_FORBIDDEN)
 
         mark_challenge_used(challenge)
         return _build_login_response(user, request)
@@ -267,12 +254,6 @@ class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        if _is_missing_gmail_app_password():
-            return Response(
-                {'detail': 'Email is not configured yet. Use a 16-character Gmail App Password in EMAIL_HOST_PASSWORD, then restart Django and try again.'},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
-
         serializer = RegistrationSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -294,16 +275,7 @@ class RegistrationView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-        verification_email_sent = False
         notification_created = False
-        try:
-            challenge = issue_email_verification_challenge(user)
-            send_email_verification_email(user, challenge)
-            verification_email_sent = True
-        except smtplib.SMTPAuthenticationError:
-            logger.exception('Gmail rejected registration verification email.')
-        except Exception:
-            logger.exception('Registration verification email failed.')
 
         try:
             log_action(user, 'User registration request', f'{user.email} submitted a new account request.', request)
@@ -312,15 +284,10 @@ class RegistrationView(APIView):
         except Exception:
             logger.exception('Registration notification creation failed.')
 
-        detail = (
-            'Registration submitted successfully. Check your email to verify your address, then wait for Super Admin approval.'
-            if verification_email_sent
-            else 'Registration submitted successfully, but we could not send the verification email right now. Ask an admin to check email settings, then use Resend Verification.'
-        )
         return Response(
             {
-                'detail': detail,
-                'verification_email_sent': verification_email_sent,
+                'detail': 'Registration submitted successfully. Wait for Super Admin approval before signing in.',
+                'verification_email_sent': False,
                 'admin_notification_created': notification_created,
                 'user': UserSerializer(user, context={'request': request}).data,
             },
@@ -351,15 +318,7 @@ class ResendVerificationView(APIView):
     def post(self, request):
         serializer = ResendVerificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data['email']
-        user = User.all_objects.filter(email__iexact=email, deleted_at__isnull=True).first()
-        if user and user.email and not user.email_verified_at:
-            try:
-                challenge = issue_email_verification_challenge(user)
-                send_email_verification_email(user, challenge)
-            except Exception:
-                pass
-        return Response({'detail': 'If an account exists for that email, a verification email has been sent.'})
+        return Response({'detail': 'Email verification is no longer required. After approval, you can sign in with your account password.'})
 
 
 class LogoutView(APIView):
@@ -478,12 +437,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 send_registration_approved_email(user)
             except Exception:
                 pass
-            if not user.email_verified_at:
-                try:
-                    challenge = issue_email_verification_challenge(user)
-                    send_email_verification_email(user, challenge)
-                except Exception:
-                    pass
 
         action_label = 'Approved user account' if previous_status == UserStatusChoices.PENDING_APPROVAL and next_status == UserStatusChoices.ACTIVE else 'Changed user status'
         log_action(
@@ -493,9 +446,7 @@ class UserViewSet(viewsets.ModelViewSet):
             request,
         )
         detail = (
-            'User registration approved successfully. They can sign in after verifying their email.'
-            if previous_status == UserStatusChoices.PENDING_APPROVAL and next_status == UserStatusChoices.ACTIVE and not user.email_verified_at
-            else 'User registration approved successfully.'
+            'User registration approved successfully.'
             if previous_status == UserStatusChoices.PENDING_APPROVAL and next_status == UserStatusChoices.ACTIVE
             else 'User status updated successfully.'
         )

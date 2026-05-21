@@ -53,7 +53,7 @@
 
         <div id="loginView" class="auth-view">
           <h2>Welcome back</h2>
-          <p class="subtext">Sign in to access the application. New accounts must be approved and email-verified before access is granted.</p>
+          <p class="subtext">Sign in to access the application. New accounts must be approved before access is granted.</p>
 
           <form id="loginForm" novalidate>
             <div class="field">
@@ -99,7 +99,7 @@
 
         <div id="registerView" class="auth-view hidden">
           <h2>Create account</h2>
-          <p class="subtext">Register a new account. New registrations stay pending until a <strong>Super Admin</strong> approves them and the email owner verifies the account.</p>
+          <p class="subtext">Register a new account. New registrations stay pending until a <strong>Super Admin</strong> approves them.</p>
 
           <form id="registerForm" novalidate>
             <div class="field">
@@ -159,7 +159,7 @@
 
         <div id="forgotPasswordView" class="auth-view hidden">
           <h2>Account help</h2>
-          <p class="subtext">Enter your email to receive a password reset link or a fresh verification email.</p>
+          <p class="subtext">Enter your email to receive a password reset link.</p>
 
           <form id="forgotPasswordForm" novalidate>
             <div class="field">
@@ -175,14 +175,10 @@
                 <i class="fa-solid fa-key"></i>
                 Send Reset Link
               </button>
-              <button class="btn btn-secondary btn-block" type="button" id="resendVerificationBtn">
-                <i class="fa-solid fa-envelope-circle-check"></i>
-                Resend Verification Email
-              </button>
             </div>
 
             <div class="helper-row helper-row-compact">
-              <p class="auth-helper-copy">Reset links and verification emails are both sent to the same email address.</p>
+              <p class="auth-helper-copy">Password reset links are sent to your account email address.</p>
               <button type="button" class="auth-link-btn" id="backToLoginFromHelpBtn">Back to Login</button>
             </div>
 

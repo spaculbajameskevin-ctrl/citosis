@@ -42,7 +42,7 @@ class DummyUrlOpenResponse:
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class RegistrationApiTests(APITestCase):
-    def test_registration_creates_pending_user_sends_verification_email_and_notifies_admin_in_app(self):
+    def test_registration_creates_pending_auto_verified_user_and_notifies_admin_in_app(self):
         super_admin = User.objects.create_user(
             email='admin-notify@example.com',
             password='strongpass123',
@@ -71,10 +71,10 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(created_user.role, RoleChoices.USER)
         self.assertEqual(created_user.status, UserStatusChoices.PENDING_APPROVAL)
         self.assertFalse(created_user.is_active)
-        self.assertIsNone(created_user.email_verified_at)
+        self.assertIsNotNone(created_user.email_verified_at)
         self.assertEqual(created_user.office, ESTABLISHMENT_OPTIONS[0])
         self.assertTrue(created_user.check_password('strongpass123'))
-        self.assertTrue(response.data['verification_email_sent'])
+        self.assertFalse(response.data['verification_email_sent'])
         notification = SubmissionNotification.objects.get(
             recipient=super_admin,
             notification_type=SubmissionNotification.TYPE_USER_REGISTRATION,
@@ -82,9 +82,7 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(notification.title, 'New user registration')
         self.assertEqual(notification.status_snapshot, UserStatusChoices.PENDING_APPROVAL)
         self.assertEqual(notification.metadata['user_email'], 'sample@example.com')
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Verify your CITOSIS PRO email', mail.outbox[0].subject)
-        self.assertTrue(extract_verification_token(mail.outbox[0].body))
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_registration_rejects_password_mismatch(self):
         response = self.client.post(
@@ -188,7 +186,7 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data['detail'], 'Your account is still pending admin approval.')
 
-    def test_approved_user_must_verify_email_before_login(self):
+    def test_approved_user_can_log_in_without_email_verification(self):
         user = User.objects.create_user(
             email='approvefirst@example.com',
             password='strongpass123',
@@ -207,8 +205,8 @@ class RegistrationApiTests(APITestCase):
             format='json',
         )
 
-        self.assertEqual(response.status_code, 403)
-        self.assertIn('not verified yet', response.data['detail'])
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
 
     def test_verification_link_marks_email_verified(self):
         user = User.objects.create_user(
