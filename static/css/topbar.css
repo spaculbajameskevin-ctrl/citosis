@@ -6,6 +6,9 @@
 .topbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .icon-btn { width: 46px; height: 46px; border-radius: 14px; background: var(--surface-strong); color: var(--text); border: 1px solid var(--border); display: grid; place-items: center; }
 .icon-btn.primary { color: white; background: linear-gradient(135deg, var(--primary), var(--accent)); border: none; }
+.sidebar-reveal-btn { color: var(--primary-strong); border-color: rgba(45,212,191,0.24); background: rgba(45,212,191,0.1); transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+.sidebar-reveal-btn:hover,
+.sidebar-reveal-btn:focus-visible { background: rgba(45,212,191,0.16); border-color: rgba(45,212,191,0.42); box-shadow: var(--ring); transform: translateX(2px); outline: none; }
 .search-box input { min-width: 260px; padding-left: 42px; }
 .file-input-hidden { display: none; }
 .account-chip {

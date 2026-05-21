@@ -29,6 +29,7 @@
   const AUTH_TOKEN_KEY = 'citosis_token';
   const AUTH_USER_KEY = 'citosis_user';
   const DATA_UPDATE_SIGNAL_KEY = 'citosis_data_update_signal';
+  const SIDEBAR_COLLAPSED_KEY = 'citosis_sidebar_collapsed';
   let establishmentOptions = readJsonScript('establishment-options-data');
 
   const state = {
@@ -75,6 +76,7 @@
     cacheDom();
     bindEvents();
     bindImageFallbacks();
+    restoreSidebarPreference();
     loadTheme();
     startClock();
     restoreSession();
@@ -133,6 +135,8 @@
     dom.sidebar = document.getElementById('sidebar');
     dom.sidebarOverlay = document.getElementById('sidebarOverlay');
     dom.menuBtn = document.getElementById('menuBtn');
+    dom.sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+    dom.sidebarRevealBtn = document.getElementById('sidebarRevealBtn');
     dom.globalSearch = document.getElementById('globalSearch');
     dom.notificationBtn = document.getElementById('notificationBtn');
     dom.notificationBadge = document.getElementById('notificationBadge');
@@ -381,6 +385,8 @@
     dom.logoutTopBtn?.addEventListener('click', confirmLogout);
     dom.menuBtn.addEventListener('click', openSidebar);
     dom.sidebarOverlay.addEventListener('click', closeSidebar);
+    dom.sidebarCollapseBtn?.addEventListener('click', () => setSidebarCollapsed(true));
+    dom.sidebarRevealBtn?.addEventListener('click', () => setSidebarCollapsed(false));
     dom.closeModalBtn.addEventListener('click', closeModal);
     dom.cancelModalBtn.addEventListener('click', closeModal);
     dom.entityForm.addEventListener('submit', handleEntitySubmit);
@@ -1336,6 +1342,30 @@
   function closeSidebar() {
     dom.sidebar.classList.remove('open');
     dom.sidebarOverlay.classList.remove('show');
+  }
+
+  function setSidebarCollapsed(isCollapsed) {
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+    dom.sidebar?.classList.remove('open');
+    dom.sidebarOverlay?.classList.remove('show');
+    dom.sidebarRevealBtn?.classList.toggle('hidden', !isCollapsed);
+    dom.sidebarCollapseBtn?.setAttribute('aria-expanded', String(!isCollapsed));
+    dom.sidebarRevealBtn?.setAttribute('aria-expanded', String(!isCollapsed));
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, isCollapsed ? 'true' : 'false');
+    } catch (error) {
+      // Ignore storage failures; the toggle still works for this page view.
+    }
+  }
+
+  function restoreSidebarPreference() {
+    let isCollapsed = false;
+    try {
+      isCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+    } catch (error) {
+      isCollapsed = false;
+    }
+    setSidebarCollapsed(isCollapsed);
   }
 
   function handleProfileAccountKeydown(event) {

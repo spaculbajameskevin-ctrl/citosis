@@ -1,11 +1,15 @@
 .sidebar {
-  position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh; background: linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(15, 23, 42, 0.94)); border-right: 1px solid rgba(148,163,184,0.12); color: white; padding: 24px; display: flex; flex-direction: column; z-index: 30; transition: transform 0.24s ease;
+  position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh; background: linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(15, 23, 42, 0.94)); border-right: 1px solid rgba(148,163,184,0.12); color: white; padding: 24px; display: flex; flex-direction: column; z-index: 30; transition: transform 0.24s ease, box-shadow 0.24s ease;
 }
 .brand { display: flex; align-items: center; gap: 14px; padding: 4px 6px 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(148,163,184,0.12); }
+.brand > div:last-of-type { min-width: 0; }
 .brand-logo { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 14px 24px rgba(37,99,235,0.28); font-size: 1.2rem; overflow: hidden; }
 .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
 .brand h2 { font-size: 1.05rem; margin-bottom: 2px; }
 .brand small { color: var(--sidebar-muted); }
+.sidebar-collapse-btn { width: 38px; height: 38px; flex: 0 0 38px; margin-left: auto; display: grid; place-items: center; border-radius: 12px; color: #dbeafe; background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.16); transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+.sidebar-collapse-btn:hover,
+.sidebar-collapse-btn:focus-visible { color: #ccfbf1; background: rgba(45,212,191,0.16); border-color: rgba(45,212,191,0.32); transform: translateX(-2px); outline: none; }
 .nav-group { display: grid; gap: 8px; margin-top: 12px; overflow: auto; padding-right: 2px; }
 .nav-btn { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px; color: #e2e8f0; background: transparent; border: 1px solid transparent; text-align: left; position: relative; overflow: hidden; transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
 .nav-btn::before { content: ""; position: absolute; inset: 10px auto 10px 0; width: 3px; border-radius: 999px; background: #2dd4bf; opacity: 0; transform: scaleY(0.35); transition: opacity 0.2s ease, transform 0.2s ease; }

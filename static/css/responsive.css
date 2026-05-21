@@ -28,9 +28,17 @@
   .sidebar.open { transform: translateX(0); }
   .main { margin-left: 0; }
   .mobile-only { display: inline-grid; }
+  .desktop-only,
+  .sidebar-reveal-btn { display: none !important; }
 }
 
-@media (min-width: 981px) { .mobile-only, .overlay { display: none !important; } }
+@media (min-width: 981px) {
+  .mobile-only,
+  .overlay { display: none !important; }
+  .desktop-only { display: inline-grid; }
+  body.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+  body.sidebar-collapsed .main { margin-left: 0; }
+}
 
 @media (max-width: 720px) {
   .auth-shell, .main, .topbar, .panel, .stat-card, .metric-card, .login-hero, .login-panel { padding-left: 18px; padding-right: 18px; }
